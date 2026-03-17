@@ -1,45 +1,101 @@
 import { Star, Award, Crown, Trophy, Flame, Zap, Eye, Heart, TrendingUp, Target, Calendar } from 'lucide-react';
 
-export const PINK_COLORS = [
-  { hex: '#ec4899', name: 'Hot Pink' },
-  { hex: '#db2777', name: 'Deep Pink' },
-  { hex: '#be185d', name: 'Magenta Pink' },
-  { hex: '#f472b6', name: 'Light Pink' },
-  { hex: '#fbcfe8', name: 'Pale Pink' },
-  { hex: '#fce7f3', name: 'Blush Pink' },
-  { hex: '#f9a8d4', name: 'Soft Pink' },
-  { hex: '#ff1493', name: 'Neon Pink' },
-  { hex: '#ff69b4', name: 'Bright Pink' },
-  { hex: '#ffc0cb', name: 'Classic Pink' },
-  { hex: '#ffb6d9', name: 'Cotton Candy' },
-  { hex: '#ff85a2', name: 'Salmon Pink' },
+// EASY PINKS - Obviously pink, clear magenta/pink hue
+export const EASY_PINK_COLORS = [
+  { hex: '#ff1493', name: 'Deep Pink' },
+  { hex: '#ff69b4', name: 'Hot Pink' },
+  { hex: '#ec4899', name: 'Pink 500' },
+  { hex: '#db2777', name: 'Pink 600' },
+  { hex: '#f472b6', name: 'Pink 400' },
   { hex: '#e91e8c', name: 'Electric Pink' },
-  { hex: '#ff66b2', name: 'Flamingo' },
-  { hex: '#ffa6c9', name: 'Carnation Pink' },
-  { hex: '#e75480', name: 'Dark Pink' },
+  { hex: '#ff66b2', name: 'Flamingo Pink' },
+  { hex: '#ff5ccd', name: 'Shocking Pink' },
+  { hex: '#f0f', name: 'Magenta' },
+  { hex: '#ff77a9', name: 'Tickle Me Pink' },
 ];
 
-export const NOT_PINK_COLORS = [
+// MEDIUM PINKS - Still pink but slightly trickier
+export const MEDIUM_PINK_COLORS = [
+  { hex: '#ffc0cb', name: 'Classic Pink' },
+  { hex: '#ffb6c1', name: 'Light Pink' },
+  { hex: '#f9a8d4', name: 'Soft Pink' },
+  { hex: '#ffa6c9', name: 'Carnation' },
+  { hex: '#e75480', name: 'Dark Pink' },
+  { hex: '#be185d', name: 'Magenta Rose' },
+  { hex: '#ff85a2', name: 'Salmon Pink' },
+  { hex: '#ffb7c5', name: 'Cherry Blossom' },
+  { hex: '#ff6f91', name: 'Fiery Rose' },
+  { hex: '#c71585', name: 'Medium Violet Red' },
+];
+
+// HARD PINKS - Subtle pinks that could be confused
+export const HARD_PINK_COLORS = [
+  { hex: '#fbcfe8', name: 'Pale Pink' },
+  { hex: '#fce7f3', name: 'Lavender Pink' },
+  { hex: '#f5d0e0', name: 'Piggy Pink' },
+  { hex: '#ffb6d9', name: 'Cotton Candy' },
+  { hex: '#d8a9c4', name: 'Pastel Pink' },
+  { hex: '#e8b4c8', name: 'Fairy Tale' },
+  { hex: '#de5d83', name: 'Blush' },
+  { hex: '#b5485d', name: 'Popstar' },
+  { hex: '#e88ca4', name: 'Mauvelous' },
+  { hex: '#f19cbb', name: 'Amaranth Pink' },
+];
+
+// All pinks combined (for backward compatibility)
+export const PINK_COLORS = [
+  ...EASY_PINK_COLORS,
+  ...MEDIUM_PINK_COLORS,
+  ...HARD_PINK_COLORS,
+];
+
+// EASY NOT-PINKS - Clearly not pink at all
+export const EASY_NOT_PINK_COLORS = [
+  { hex: '#3b82f6', name: 'Blue' },
+  { hex: '#10b981', name: 'Emerald' },
   { hex: '#f97316', name: 'Orange' },
   { hex: '#fbbf24', name: 'Amber' },
-  { hex: '#a855f7', name: 'Purple' },
-  { hex: '#8b5cf6', name: 'Violet' },
-  { hex: '#3b82f6', name: 'Blue' },
   { hex: '#06b6d4', name: 'Cyan' },
-  { hex: '#10b981', name: 'Emerald' },
-  { hex: '#6366f1', name: 'Indigo' },
+  { hex: '#22c55e', name: 'Green' },
+  { hex: '#eab308', name: 'Yellow' },
+  { hex: '#0ea5e9', name: 'Sky Blue' },
+  { hex: '#14b8a6', name: 'Teal' },
+  { hex: '#84cc16', name: 'Lime' },
+];
+
+// MEDIUM NOT-PINKS - Could trick some people
+export const MEDIUM_NOT_PINK_COLORS = [
   { hex: '#ef4444', name: 'Red' },
+  { hex: '#8b5cf6', name: 'Violet' },
+  { hex: '#a855f7', name: 'Purple' },
+  { hex: '#6366f1', name: 'Indigo' },
+  { hex: '#dc2626', name: 'Crimson' },
+  { hex: '#b91c1c', name: 'Dark Red' },
+  { hex: '#7c3aed', name: 'Grape' },
+  { hex: '#9333ea', name: 'Amethyst' },
   { hex: '#6b7280', name: 'Gray' },
-  { hex: '#d946ef', name: 'Fuchsia' },
-  { hex: '#ff6b9d', name: 'Salmon' },
-  { hex: '#ffa3c1', name: 'Peach' },
-  { hex: '#dda0dd', name: 'Plum' },
-  { hex: '#ff7f50', name: 'Coral' },
-  { hex: '#c084fc', name: 'Lavender' },
-  { hex: '#fb7185', name: 'Rose Red' },
-  { hex: '#e879f9', name: 'Orchid' },
-  { hex: '#f0abfc', name: 'Mauve' },
-  { hex: '#c4b5fd', name: 'Periwinkle' },
+  { hex: '#f43f5e', name: 'Rose' },
+];
+
+// HARD NOT-PINKS - Tricky colors that look pink-ish but aren't technically pink
+export const HARD_NOT_PINK_COLORS = [
+  { hex: '#d946ef', name: 'Fuchsia' },      // More purple than pink
+  { hex: '#e879f9', name: 'Orchid' },       // Purple-leaning
+  { hex: '#c084fc', name: 'Lavender' },     // Light purple
+  { hex: '#f0abfc', name: 'Mauve' },        // Purple with pink tint
+  { hex: '#dda0dd', name: 'Plum' },         // Purple fruit color
+  { hex: '#ff7f50', name: 'Coral' },        // Orange-red
+  { hex: '#fa8072', name: 'Salmon' },       // Orange-red fish
+  { hex: '#ff6347', name: 'Tomato' },       // Red-orange
+  { hex: '#c4b5fd', name: 'Periwinkle' },   // Blue-purple
+  { hex: '#f472b6', name: 'Pinkish' },      // This is actually pink but testing edge
+];
+
+// All not-pinks combined (for backward compatibility)
+export const NOT_PINK_COLORS = [
+  ...EASY_NOT_PINK_COLORS,
+  ...MEDIUM_NOT_PINK_COLORS,
+  ...HARD_NOT_PINK_COLORS.slice(0, -1), // Remove the "Pinkish" which is actually pink
 ];
 
 export const MOTIVATIONAL_MESSAGES = {

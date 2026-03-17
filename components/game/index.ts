@@ -14,3 +14,4 @@ export { AchievementsView } from './views/AchievementsView';
 export { SettingsView } from './views/SettingsView';
 export { HelpView } from './views/HelpView';
 export { CalendarView } from './views/CalendarView';
+export { TutorialOverlay } from './TutorialOverlay';

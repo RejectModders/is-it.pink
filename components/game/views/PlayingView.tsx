@@ -129,7 +129,7 @@ export function PlayingView({
         <StatCard icon={Zap} label="Multi" value={`${multiplier.toFixed(1)}x`} />
       </div>
 
-      {/* Streak Badge */}
+      {/* Streak Badge - Enhanced for higher streaks */}
       <AnimatePresence>
         {streak >= 5 && (
           <motion.div 
@@ -138,14 +138,97 @@ export function PlayingView({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.8 }}
           >
-            <motion.div 
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/50"
-              animate={{ scale: [1, 1.05, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
-            >
-              <Flame className="w-4 h-4 text-primary" />
-              <span className="text-sm font-bold text-primary">STREAK FIRE! {streak}</span>
-            </motion.div>
+            {streak >= 25 ? (
+              // LEGENDARY tier (25+)
+              <motion.div 
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-yellow-500/30 via-orange-500/30 to-red-500/30 border-2 border-yellow-400 shadow-lg shadow-yellow-500/30"
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  boxShadow: [
+                    '0 0 20px rgba(234, 179, 8, 0.3)',
+                    '0 0 40px rgba(234, 179, 8, 0.6)',
+                    '0 0 20px rgba(234, 179, 8, 0.3)'
+                  ]
+                }}
+                transition={{ duration: 0.5, repeat: Infinity }}
+              >
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                >
+                  <Crown className="w-6 h-6 text-yellow-400" />
+                </motion.div>
+                <span className="text-lg font-black bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent">
+                  LEGENDARY! {streak}
+                </span>
+                <motion.div
+                  animate={{ rotate: -360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                >
+                  <Crown className="w-6 h-6 text-yellow-400" />
+                </motion.div>
+              </motion.div>
+            ) : streak >= 20 ? (
+              // GODLIKE tier (20-24)
+              <motion.div 
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-purple-500/30 via-pink-500/30 to-red-500/30 border-2 border-purple-400 shadow-lg shadow-purple-500/30"
+                animate={{ 
+                  scale: [1, 1.08, 1],
+                  boxShadow: [
+                    '0 0 15px rgba(168, 85, 247, 0.3)',
+                    '0 0 30px rgba(168, 85, 247, 0.5)',
+                    '0 0 15px rgba(168, 85, 247, 0.3)'
+                  ]
+                }}
+                transition={{ duration: 0.6, repeat: Infinity }}
+              >
+                <motion.div animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 0.4, repeat: Infinity }}>
+                  <Target className="w-5 h-5 text-purple-400" />
+                </motion.div>
+                <span className="text-base font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  GODLIKE! {streak}
+                </span>
+              </motion.div>
+            ) : streak >= 15 ? (
+              // UNSTOPPABLE tier (15-19)
+              <motion.div 
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-orange-500/25 to-red-500/25 border border-orange-400 shadow-md shadow-orange-500/20"
+                animate={{ 
+                  scale: [1, 1.06, 1],
+                  borderColor: ['rgb(251, 146, 60)', 'rgb(239, 68, 68)', 'rgb(251, 146, 60)']
+                }}
+                transition={{ duration: 0.8, repeat: Infinity }}
+              >
+                <motion.div animate={{ y: [0, -3, 0] }} transition={{ duration: 0.3, repeat: Infinity }}>
+                  <Zap className="w-5 h-5 text-orange-400" />
+                </motion.div>
+                <span className="text-sm font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+                  UNSTOPPABLE! {streak}
+                </span>
+              </motion.div>
+            ) : streak >= 10 ? (
+              // ON FIRE tier (10-14)
+              <motion.div 
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/25 to-accent/25 border border-accent"
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 0.7, repeat: Infinity }}
+              >
+                <motion.div animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 0.5, repeat: Infinity }}>
+                  <Flame className="w-5 h-5 text-accent" />
+                </motion.div>
+                <span className="text-sm font-bold text-accent">ON FIRE! {streak}</span>
+              </motion.div>
+            ) : (
+              // STREAK FIRE tier (5-9)
+              <motion.div 
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/50"
+                animate={{ scale: [1, 1.03, 1] }}
+                transition={{ duration: 1, repeat: Infinity }}
+              >
+                <Flame className="w-4 h-4 text-primary" />
+                <span className="text-sm font-bold text-primary">STREAK FIRE! {streak}</span>
+              </motion.div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

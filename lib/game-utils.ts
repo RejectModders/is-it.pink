@@ -1,4 +1,15 @@
-import { PINK_COLORS, NOT_PINK_COLORS, DAILY_CHALLENGES, DailyChallenge } from './game-constants';
+import { 
+  PINK_COLORS, 
+  NOT_PINK_COLORS, 
+  DAILY_CHALLENGES, 
+  DailyChallenge,
+  EASY_PINK_COLORS,
+  MEDIUM_PINK_COLORS,
+  HARD_PINK_COLORS,
+  EASY_NOT_PINK_COLORS,
+  MEDIUM_NOT_PINK_COLORS,
+  HARD_NOT_PINK_COLORS,
+} from './game-constants';
 
 // Helper function to convert hex to HSL
 export function hexToHSL(hex: string): { h: number; s: number; l: number } {
@@ -59,6 +70,22 @@ export function getDailyChallenge(date: string): DailyChallenge {
   return DAILY_CHALLENGES[challengeIndex];
 }
 
+// Get colors based on difficulty level
+function getColorsForDifficulty(difficulty: 'easy' | 'medium' | 'hard', isPink: boolean) {
+  if (difficulty === 'easy') {
+    // Easy: Use obviously pink colors and clearly not-pink colors
+    return isPink ? EASY_PINK_COLORS : EASY_NOT_PINK_COLORS;
+  } else if (difficulty === 'medium') {
+    // Medium: Mix of easy and medium colors
+    const pinks = [...EASY_PINK_COLORS, ...MEDIUM_PINK_COLORS];
+    const notPinks = [...EASY_NOT_PINK_COLORS, ...MEDIUM_NOT_PINK_COLORS];
+    return isPink ? pinks : notPinks;
+  } else {
+    // Hard: All colors including tricky ones
+    return isPink ? PINK_COLORS : NOT_PINK_COLORS;
+  }
+}
+
 // Generate the color sequence for a daily challenge
 export function getDailySequence(date: string): Array<{ color: { hex: string; name: string }; isPink: boolean }> {
   const challenge = getDailyChallenge(date);
@@ -68,7 +95,7 @@ export function getDailySequence(date: string): Array<{ color: { hex: string; na
   for (let i = 0; i < challenge.rounds; i++) {
     const rand = seededRandom(seed + i * 1000);
     const isPink = rand < challenge.pinkRatio;
-    const colorArray = isPink ? PINK_COLORS : NOT_PINK_COLORS;
+    const colorArray = getColorsForDifficulty(challenge.difficulty, isPink);
     const colorIndex = Math.floor(seededRandom(seed + i * 2000) * colorArray.length);
     sequence.push({ color: colorArray[colorIndex], isPink });
   }
@@ -84,7 +111,7 @@ export function getChallengeSequence(challenge: DailyChallenge, seedOffset = 0):
   for (let i = 0; i < challenge.rounds; i++) {
     const rand = seededRandom(seed + i * 1000);
     const isPink = rand < challenge.pinkRatio;
-    const colorArray = isPink ? PINK_COLORS : NOT_PINK_COLORS;
+    const colorArray = getColorsForDifficulty(challenge.difficulty, isPink);
     const colorIndex = Math.floor(seededRandom(seed + i * 2000) * colorArray.length);
     sequence.push({ color: colorArray[colorIndex], isPink });
   }

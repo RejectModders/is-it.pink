@@ -6,6 +6,10 @@ import { AnimatePresence } from 'framer-motion';
 import {
   PINK_COLORS,
   NOT_PINK_COLORS,
+  EASY_PINK_COLORS,
+  MEDIUM_PINK_COLORS,
+  EASY_NOT_PINK_COLORS,
+  MEDIUM_NOT_PINK_COLORS,
   MOTIVATIONAL_MESSAGES,
   ACHIEVEMENTS,
   SOUND_PACKS,
@@ -35,6 +39,7 @@ import {
   SettingsView,
   HelpView,
   CalendarView,
+  TutorialOverlay,
 } from '@/components/game';
 
 export default function IsItPink() {
@@ -89,6 +94,8 @@ export default function IsItPink() {
   const [previewChallenge, setPreviewChallenge] = useState<DailyChallenge | null>(null);
   const [soundPack, setSoundPack] = useState<SoundPack>('classic');
   const [colorTheme, setColorTheme] = useState<ColorTheme>('pink');
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [hasSeenTutorial, setHasSeenTutorial] = useState(true); // Default true to avoid flash
   
   const colorBoxRef = useRef<HTMLDivElement>(null);
   const particleIdRef = useRef(0);
@@ -118,6 +125,7 @@ export default function IsItPink() {
     const savedHaptic = localStorage.getItem('pinkGameHaptic');
     const savedSoundPack = localStorage.getItem('pinkGameSoundPack');
     const savedTheme = localStorage.getItem('pinkGameTheme');
+    const savedTutorial = localStorage.getItem('pinkGameTutorialSeen');
     
     if (saved) setHighScore(parseInt(saved));
     if (savedStats) {
@@ -135,6 +143,14 @@ export default function IsItPink() {
     if (savedHaptic !== null) setHapticEnabled(JSON.parse(savedHaptic));
     if (savedSoundPack && SOUND_PACKS[savedSoundPack as SoundPack]) setSoundPack(savedSoundPack as SoundPack);
     if (savedTheme && COLOR_THEMES[savedTheme as ColorTheme]) setColorTheme(savedTheme as ColorTheme);
+    
+    // Show tutorial for first-time users
+    if (!savedTutorial) {
+      setShowTutorial(true);
+      setHasSeenTutorial(false);
+    } else {
+      setHasSeenTutorial(true);
+    }
     
     if (!savedDarkMode && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       setDarkMode(true);
@@ -352,7 +368,20 @@ export default function IsItPink() {
     else if (difficulty === 'extreme') pinkChance = 0.4;
     
     const isPinkColor = Math.random() < pinkChance;
-    const colorArray = isPinkColor ? PINK_COLORS : NOT_PINK_COLORS;
+    
+    // Use difficulty-based color arrays for clearer distinctions
+    let colorArray;
+    if (difficulty === 'easy') {
+      colorArray = isPinkColor ? EASY_PINK_COLORS : EASY_NOT_PINK_COLORS;
+    } else if (difficulty === 'normal') {
+      const pinks = [...EASY_PINK_COLORS, ...MEDIUM_PINK_COLORS];
+      const notPinks = [...EASY_NOT_PINK_COLORS, ...MEDIUM_NOT_PINK_COLORS];
+      colorArray = isPinkColor ? pinks : notPinks;
+    } else {
+      // Hard and extreme use all colors
+      colorArray = isPinkColor ? PINK_COLORS : NOT_PINK_COLORS;
+    }
+    
     const selected = colorArray[Math.floor(Math.random() * colorArray.length)];
     
     setCurrentColor(selected.hex);
@@ -425,27 +454,70 @@ export default function IsItPink() {
     setColorKey(prev => prev + 1);
   };
 
-  const createParticles = (isCorrect: boolean, color: string, clientX?: number, clientY?: number) => {
-    const newParticles: Particle[] = [];
-    const count = isCorrect ? 25 : 12;
-    const centerX = clientX || window.innerWidth / 2;
-    const centerY = clientY || window.innerHeight / 2;
-    const types: ('circle' | 'star' | 'heart')[] = isCorrect ? ['circle', 'star', 'heart'] : ['circle'];
-    
-    for (let i = 0; i < count; i++) {
-      const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
-      const speed = (isCorrect ? 8 : 4) * (0.5 + Math.random() * 0.5);
-      
-      newParticles.push({
-        id: particleIdRef.current++,
-        x: centerX,
-        y: centerY,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - (isCorrect ? 3 : 1),
-        color: isCorrect ? color : '#ef4444',
-        size: 6 + Math.random() * 10,
-        rotation: Math.random() * 360,
-        type: types[Math.floor(Math.random() * types.length)],
+const createParticles = (isCorrect: boolean, color: string, clientX?: number, clientY?: number, currentStreak?: number) => {
+  const newParticles: Particle[] = [];
+  
+  // Scale particles based on streak level
+  const streakLevel = currentStreak || 0;
+  let baseCount = isCorrect ? 25 : 12;
+  let speedMultiplier = 1;
+  let sizeMultiplier = 1;
+  
+  if (streakLevel >= 25) {
+    baseCount = 60;
+    speedMultiplier = 1.8;
+    sizeMultiplier = 1.5;
+  } else if (streakLevel >= 20) {
+    baseCount = 50;
+    speedMultiplier = 1.5;
+    sizeMultiplier = 1.3;
+  } else if (streakLevel >= 15) {
+    baseCount = 40;
+    speedMultiplier = 1.3;
+    sizeMultiplier = 1.2;
+  } else if (streakLevel >= 10) {
+    baseCount = 35;
+    speedMultiplier = 1.2;
+    sizeMultiplier = 1.1;
+  }
+  
+  const count = isCorrect ? baseCount : 12;
+  const centerX = clientX || window.innerWidth / 2;
+  const centerY = clientY || window.innerHeight / 2;
+  const types: ('circle' | 'star' | 'heart')[] = isCorrect ? ['circle', 'star', 'heart'] : ['circle'];
+  
+  // Special colors for high streaks
+  const getParticleColor = () => {
+    if (!isCorrect) return '#ef4444';
+    if (streakLevel >= 25) {
+      const goldColors = ['#fbbf24', '#f59e0b', '#fcd34d', color];
+      return goldColors[Math.floor(Math.random() * goldColors.length)];
+    }
+    if (streakLevel >= 20) {
+      const purpleColors = ['#a855f7', '#c084fc', '#e879f9', color];
+      return purpleColors[Math.floor(Math.random() * purpleColors.length)];
+    }
+    if (streakLevel >= 15) {
+      const orangeColors = ['#f97316', '#fb923c', '#fdba74', color];
+      return orangeColors[Math.floor(Math.random() * orangeColors.length)];
+    }
+    return color;
+  };
+  
+  for (let i = 0; i < count; i++) {
+  const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+  const speed = (isCorrect ? 8 : 4) * (0.5 + Math.random() * 0.5) * speedMultiplier;
+  
+  newParticles.push({
+  id: particleIdRef.current++,
+  x: centerX,
+  y: centerY,
+  vx: Math.cos(angle) * speed,
+  vy: Math.sin(angle) * speed - (isCorrect ? 3 : 1) * speedMultiplier,
+  color: getParticleColor(),
+  size: (6 + Math.random() * 10) * sizeMultiplier,
+  rotation: Math.random() * 360,
+  type: types[Math.floor(Math.random() * types.length)],
       });
     }
     
@@ -553,7 +625,7 @@ export default function IsItPink() {
       });
       setCorrectGuesses(prev => prev + 1);
       setMultiplier(prev => Math.min(prev + 0.5, 5));
-      createParticles(true, currentColor, e?.clientX, e?.clientY);
+      createParticles(true, currentColor, e?.clientX, e?.clientY, streak + 1);
       setPulseCorrect(true);
       setTimeout(() => setPulseCorrect(false), 200);
       
@@ -666,9 +738,15 @@ export default function IsItPink() {
     window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
   };
 
-  const accuracy = totalGuesses > 0 ? Math.round((correctGuesses / totalGuesses) * 100) : 0;
+const accuracy = totalGuesses > 0 ? Math.round((correctGuesses / totalGuesses) * 100) : 0;
   const hasDoneDaily = stats.lastDailyDate === todayDate;
-
+  
+  const handleTutorialComplete = () => {
+    setShowTutorial(false);
+    setHasSeenTutorial(true);
+    localStorage.setItem('pinkGameTutorialSeen', 'true');
+  };
+  
   return (
     <div className={`min-h-screen min-h-[100dvh] transition-colors duration-100 ${shakeScreen ? 'animate-shake' : ''}`}>
       <div className="min-h-screen min-h-[100dvh] bg-background text-foreground flex flex-col relative overflow-hidden">
@@ -694,6 +772,13 @@ export default function IsItPink() {
 
         <Confetti showConfetti={showConfetti} colorTheme={colorTheme} />
         <Particles particles={particles} />
+
+        {/* Tutorial Overlay for First-Time Users */}
+        <AnimatePresence>
+          {showTutorial && (
+            <TutorialOverlay onComplete={handleTutorialComplete} />
+          )}
+        </AnimatePresence>
 
         <GameHeader
           darkMode={darkMode}
