@@ -1,6 +1,6 @@
 'use client';
 
-import { Star, Zap, Heart, Flame, Calendar, Clock, Target, Crown } from 'lucide-react';
+import { Star, Zap, Heart, Flame, Calendar, Clock, Target, Crown, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface PlayingViewProps {
@@ -27,6 +27,7 @@ interface PlayingViewProps {
   handleGuess: (guess: 'pink' | 'notpink', e?: React.MouseEvent) => void;
   dailyTimeLeft: number | null;
   dailyChallengeName?: string;
+  isPreviewMode?: boolean;
 }
 
 function StatCard({ icon: Icon, label, value, color = 'text-foreground' }: { icon: React.ElementType, label: string, value: string | number, color?: string }) {
@@ -68,6 +69,7 @@ export function PlayingView({
   handleGuess,
   dailyTimeLeft,
   dailyChallengeName,
+  isPreviewMode = false,
 }: PlayingViewProps) {
   return (
     <motion.div 
@@ -78,11 +80,21 @@ export function PlayingView({
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.1 }}
     >
+      {/* Practice Mode Indicator */}
+      {isPreviewMode && (
+        <div className="text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/30">
+            <Play className="w-4 h-4 text-accent" />
+            <span className="text-sm font-semibold text-accent">Practice Mode - Stats Won&apos;t Save</span>
+          </div>
+        </div>
+      )}
+
       {/* Daily Progress */}
       {isDailyMode && (
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30">
-            <Calendar className="w-4 h-4 text-primary" />
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${isPreviewMode ? 'bg-accent/10 border-accent/30' : 'bg-primary/10 border-primary/30'} border`}>
+            <Calendar className={`w-4 h-4 ${isPreviewMode ? 'text-accent' : 'text-primary'}`} />
             <span className="text-sm font-semibold">
               {dailyChallengeName ? `${dailyChallengeName}: ` : 'Daily: '}{dailyIndex + 1} / {dailySequenceLength}
             </span>

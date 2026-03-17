@@ -25,7 +25,14 @@ export const metadata: Metadata = {
     siteName: 'is it pink?',
     locale: 'en_US',
     type: 'website',
-    countryName: 'is it pink?',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'is it pink? - The Color Guessing Game',
+      },
+    ],
   },
   other: {
     'theme-color': '#ec4899',
@@ -37,6 +44,11 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
   },
   icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.png', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
     apple: '/apple-icon.png',
   },
   keywords: ['pink', 'color game', 'guessing game', 'mini game', 'color perception', 'fun game'],

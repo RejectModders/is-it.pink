@@ -287,6 +287,18 @@ export function MenuView({
         >
           <Palette className="w-4 h-4" />
         </motion.button>
+        <motion.button
+          onClick={() => {
+            playSound('click');
+            setGameState('calendar');
+          }}
+          className="py-3 rounded-xl border border-border hover:bg-muted text-sm font-semibold flex items-center justify-center gap-1.5"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.08 }}
+        >
+          <Calendar className="w-4 h-4" />
+        </motion.button>
       </div>
 
       {highScore > 0 && (

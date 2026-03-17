@@ -17,8 +17,8 @@ import {
   type ColorTheme,
   type GameStats,
 } from '@/lib/game-constants';
-import { generateThemeColors, getDailySequence, getDailyChallenge } from '@/lib/game-utils';
-import { type DailyChallenge } from '@/lib/game-constants';
+import { generateThemeColors, getDailySequence, getDailyChallenge, getChallengeSequence, getChallengeForDate } from '@/lib/game-utils';
+import { type DailyChallenge, DAILY_CHALLENGES } from '@/lib/game-constants';
 
 import {
   GameHeader,
@@ -34,6 +34,7 @@ import {
   AchievementsView,
   SettingsView,
   HelpView,
+  CalendarView,
 } from '@/components/game';
 
 export default function IsItPink() {
@@ -84,12 +85,15 @@ export default function IsItPink() {
   const [dailyCompleted, setDailyCompleted] = useState(false);
   const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
   const [dailyTimeLeft, setDailyTimeLeft] = useState<number | null>(null);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [previewChallenge, setPreviewChallenge] = useState<DailyChallenge | null>(null);
   const [soundPack, setSoundPack] = useState<SoundPack>('classic');
   const [colorTheme, setColorTheme] = useState<ColorTheme>('pink');
   
   const colorBoxRef = useRef<HTMLDivElement>(null);
   const particleIdRef = useRef(0);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const lastTickRef = useRef<number>(0);
 
   // Apply theme colors
   useEffect(() => {
@@ -189,6 +193,66 @@ export default function IsItPink() {
     return () => clearInterval(timer);
   }, [isDailyMode, gameState, dailyTimeLeft]);
 
+  // Timer sound effects - play ticking sounds when time is low
+  useEffect(() => {
+    if (!soundEnabled || gameState !== 'playing') return;
+    
+    // For daily challenge time limit
+    if (dailyTimeLeft !== null && dailyTimeLeft > 0 && dailyTimeLeft <= 3) {
+      const now = Date.now();
+      const interval = dailyTimeLeft <= 1 ? 200 : 500; // Faster ticks when very low
+      if (now - lastTickRef.current >= interval) {
+        lastTickRef.current = now;
+        // Play tick sound
+        try {
+          if (!audioContextRef.current) {
+            audioContextRef.current = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+          }
+          const ctx = audioContextRef.current;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.frequency.setValueAtTime(dailyTimeLeft <= 1 ? 1200 : 800, ctx.currentTime);
+          osc.type = dailyTimeLeft <= 1 ? 'square' : 'sine';
+          gain.gain.setValueAtTime(dailyTimeLeft <= 1 ? 0.06 : 0.03, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.05);
+        } catch {
+          // Audio not supported
+        }
+      }
+    }
+    
+    // For timed mode
+    if (timedMode && !isDailyMode && timeLeft > 0 && timeLeft <= 10) {
+      const now = Date.now();
+      const interval = timeLeft <= 3 ? 300 : 1000;
+      if (now - lastTickRef.current >= interval) {
+        lastTickRef.current = now;
+        try {
+          if (!audioContextRef.current) {
+            audioContextRef.current = new (window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+          }
+          const ctx = audioContextRef.current;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.frequency.setValueAtTime(timeLeft <= 3 ? 1000 : 700, ctx.currentTime);
+          osc.type = timeLeft <= 3 ? 'square' : 'sine';
+          gain.gain.setValueAtTime(timeLeft <= 3 ? 0.05 : 0.03, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.06);
+        } catch {
+          // Audio not supported
+        }
+      }
+    }
+  }, [dailyTimeLeft, timeLeft, soundEnabled, gameState, timedMode, isDailyMode]);
+
   const triggerHaptic = (type: 'light' | 'medium' | 'heavy') => {
     if (!hapticEnabled || !navigator.vibrate) return;
     
@@ -228,6 +292,9 @@ export default function IsItPink() {
   }, [hapticEnabled]);
 
   const saveStats = useCallback(() => {
+    // Skip saving stats in preview mode
+    if (isPreviewMode) return;
+    
     const gameAccuracy = totalGuesses > 0 ? Math.round((correctGuesses / totalGuesses) * 100) : 0;
     const newGameEntry = {
       date: new Date().toISOString(),
@@ -264,7 +331,7 @@ export default function IsItPink() {
     }
     
     checkAchievements(newStats, { totalGuesses, correctGuesses });
-  }, [stats, score, correctGuesses, totalGuesses, maxStreak, highScore, isDailyMode, todayDate, dailyCompleted, checkAchievements]);
+  }, [stats, score, correctGuesses, totalGuesses, maxStreak, highScore, isDailyMode, todayDate, dailyCompleted, checkAchievements, isPreviewMode]);
 
   const generateColor = useCallback(() => {
     if (isDailyMode) {
@@ -326,6 +393,36 @@ export default function IsItPink() {
     } else {
       generateColor();
     }
+    setIsPreviewMode(false);
+    setPreviewChallenge(null);
+  };
+
+  // Start a preview/practice game for any challenge (doesn't affect stats)
+  const startPreview = (challenge: DailyChallenge) => {
+    setIsPreviewMode(true);
+    setPreviewChallenge(challenge);
+    setIsDailyMode(true); // Use daily mode mechanics
+    setGameState('playing');
+    setScore(0);
+    setLives(challenge.lives);
+    setDailyTimeLeft(challenge.timeLimit || null);
+    setStreak(0);
+    setMaxStreak(0);
+    setMultiplier(1);
+    setTotalGuesses(0);
+    setCorrectGuesses(0);
+    setTimeLeft(0);
+    setDailyIndex(0);
+    
+    // Generate a new random sequence for this practice (using random seed offset)
+    const previewSequence = getChallengeSequence(challenge, Date.now());
+    setDailySequence(previewSequence);
+    
+    const current = previewSequence[0];
+    setCurrentColor(current.color.hex);
+    setCurrentColorName(current.color.name);
+    setIsPink(current.isPink);
+    setColorKey(prev => prev + 1);
   };
 
   const createParticles = (isCorrect: boolean, color: string, clientX?: number, clientY?: number) => {
@@ -355,7 +452,7 @@ export default function IsItPink() {
     setParticles(prev => [...prev, ...newParticles]);
   };
 
-  const playSound = (type: 'correct' | 'wrong' | 'click') => {
+  const playSound = (type: 'correct' | 'wrong' | 'click' | 'tick' | 'urgentTick') => {
     if (!soundEnabled) return;
     
     try {
@@ -391,6 +488,30 @@ export default function IsItPink() {
           osc.start(ctx.currentTime + i * 0.1);
           osc.stop(ctx.currentTime + i * 0.1 + 0.2);
         });
+      } else if (type === 'tick') {
+        // Subtle tick sound for timer countdown
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.03, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.05);
+      } else if (type === 'urgentTick') {
+        // Urgent tick sound when time is very low
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.setValueAtTime(1200, ctx.currentTime);
+        osc.type = 'square';
+        gain.gain.setValueAtTime(0.06, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.08);
       } else {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -639,6 +760,15 @@ export default function IsItPink() {
               />
             )}
 
+            {gameState === 'calendar' && (
+              <CalendarView
+                setGameState={setGameState}
+                startPreview={startPreview}
+                playSound={playSound}
+                todayDate={todayDate}
+              />
+            )}
+
             {gameState === 'playing' && (
               <PlayingView
                 score={score}
@@ -663,7 +793,8 @@ export default function IsItPink() {
                 colorBoxRef={colorBoxRef}
                 handleGuess={handleGuess}
                 dailyTimeLeft={dailyTimeLeft}
-                dailyChallengeName={dailyChallenge?.name}
+                dailyChallengeName={isPreviewMode ? previewChallenge?.name : dailyChallenge?.name}
+                isPreviewMode={isPreviewMode}
               />
             )}
 

@@ -75,3 +75,26 @@ export function getDailySequence(date: string): Array<{ color: { hex: string; na
   
   return sequence;
 }
+
+// Generate a sequence for any challenge (for preview mode)
+export function getChallengeSequence(challenge: DailyChallenge, seedOffset = 0): Array<{ color: { hex: string; name: string }; isPink: boolean }> {
+  const seed = (challenge.id * 9999) + seedOffset;
+  const sequence: Array<{ color: { hex: string; name: string }; isPink: boolean }> = [];
+  
+  for (let i = 0; i < challenge.rounds; i++) {
+    const rand = seededRandom(seed + i * 1000);
+    const isPink = rand < challenge.pinkRatio;
+    const colorArray = isPink ? PINK_COLORS : NOT_PINK_COLORS;
+    const colorIndex = Math.floor(seededRandom(seed + i * 2000) * colorArray.length);
+    sequence.push({ color: colorArray[colorIndex], isPink });
+  }
+  
+  return sequence;
+}
+
+// Get challenge for a specific date (for calendar)
+export function getChallengeForDate(date: Date): DailyChallenge {
+  const daysSinceEpoch = Math.floor(date.getTime() / (1000 * 60 * 60 * 24));
+  const challengeIndex = daysSinceEpoch % DAILY_CHALLENGES.length;
+  return DAILY_CHALLENGES[challengeIndex];
+}

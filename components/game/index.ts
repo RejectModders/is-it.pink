@@ -13,3 +13,4 @@ export { StatsView } from './views/StatsView';
 export { AchievementsView } from './views/AchievementsView';
 export { SettingsView } from './views/SettingsView';
 export { HelpView } from './views/HelpView';
+export { CalendarView } from './views/CalendarView';

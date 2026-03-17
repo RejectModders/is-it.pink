@@ -158,7 +158,7 @@ export interface GameStats {
   correctGuesses: number;
 }
 
-export type GameState = 'menu' | 'playing' | 'gameover' | 'help' | 'stats' | 'achievements' | 'daily' | 'settings';
+export type GameState = 'menu' | 'playing' | 'gameover' | 'help' | 'stats' | 'achievements' | 'daily' | 'settings' | 'calendar';
 export type SoundPack = keyof typeof SOUND_PACKS;
 export type ColorTheme = keyof typeof COLOR_THEMES;
 
