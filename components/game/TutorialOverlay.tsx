@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, X, Target, Flame, Heart, Star, Calendar, Trophy } from 'lucide-react';
+import { ChevronRight, ChevronLeft, X, Flame, Heart, Calendar, Trophy, MousePointerClick } from 'lucide-react';
 import Image from 'next/image';
 
 interface TutorialOverlayProps {
@@ -11,201 +11,49 @@ interface TutorialOverlayProps {
 
 const TUTORIAL_STEPS = [
   {
-    title: 'Welcome!',
-    subtitle: 'is it pink?',
-    description: 'Test your color perception by identifying which colors are actually pink.',
-    visual: 'welcome',
-    accent: '#ec4899',
+    icon: null, // Uses favicon
+    title: 'Welcome to is it pink?',
+    description: 'A simple color game that will test your perception. Can you tell which colors are truly pink?',
+    tip: null,
   },
   {
-    title: 'Gameplay',
-    subtitle: 'Simple but tricky',
-    description: 'See a color, decide: PINK or NOT PINK. Use buttons or keyboard (A / D keys).',
-    visual: 'gameplay',
-    accent: '#3b82f6',
+    icon: MousePointerClick,
+    title: 'How to Play',
+    description: 'You\'ll see a color. Tap PINK if you think it\'s pink, or NOT PINK if it isn\'t. Use keyboard shortcuts A and D for faster play.',
+    tip: 'Trust your instincts!',
   },
   {
-    title: 'Streaks',
-    subtitle: 'Chain your wins',
-    description: 'Consecutive correct answers build your streak. Higher streaks = bigger multipliers and epic effects!',
-    visual: 'streaks',
-    accent: '#f97316',
+    icon: Flame,
+    title: 'Build Your Streak',
+    description: 'Answer correctly in a row to build combos. The higher your streak, the bigger your score multiplier becomes.',
+    tip: 'Reach 25+ for legendary effects!',
   },
   {
-    title: 'Lives',
-    subtitle: 'Three chances',
-    description: 'Classic mode gives 3 lives. Timed mode has unlimited lives but only 60 seconds!',
-    visual: 'lives',
-    accent: '#ef4444',
+    icon: Heart,
+    title: 'Watch Your Lives',
+    description: 'You start with 3 lives in Classic mode. Wrong answers cost a life. In Timed mode, race against 60 seconds instead.',
+    tip: 'Choose your mode wisely.',
   },
   {
-    title: 'Daily Challenge',
-    subtitle: 'New every day',
-    description: 'Unique daily challenge with special rules. Same for everyone worldwide!',
-    visual: 'daily',
-    accent: '#8b5cf6',
+    icon: Calendar,
+    title: 'Daily Challenges',
+    description: 'A unique challenge awaits you every day with special rules and difficulty. The same challenge for players worldwide!',
+    tip: 'Check the calendar for upcoming challenges.',
   },
   {
-    title: 'Ready?',
-    subtitle: 'Let\'s go!',
-    description: 'Earn achievements, climb the ranks, and become a true pink master.',
-    visual: 'ready',
-    accent: '#eab308',
+    icon: Trophy,
+    title: 'Ready to Play?',
+    description: 'Unlock achievements, master all 50 challenges, and prove you\'re a true pink expert. Good luck!',
+    tip: null,
   },
 ];
-
-function TutorialVisual({ type, accent }: { type: string; accent: string }) {
-  switch (type) {
-    case 'welcome':
-      return (
-        <div className="relative w-full h-full flex items-center justify-center">
-          <motion.div
-            animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <Image src="/favicon.png" alt="is it pink?" width={120} height={120} className="drop-shadow-2xl" />
-          </motion.div>
-          <motion.div
-            className="absolute inset-0 rounded-full"
-            style={{ background: `radial-gradient(circle, ${accent}20 0%, transparent 70%)` }}
-            animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-        </div>
-      );
-    case 'gameplay':
-      return (
-        <div className="relative w-full h-full flex items-center justify-center gap-4">
-          <motion.div
-            className="w-24 h-24 rounded-2xl shadow-lg"
-            style={{ backgroundColor: '#ec4899' }}
-            animate={{ scale: [1, 1.05, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          />
-          <div className="flex flex-col gap-2">
-            <motion.div
-              className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold"
-              animate={{ x: [0, 5, 0] }}
-              transition={{ duration: 0.8, repeat: Infinity, delay: 0.5 }}
-            >
-              PINK
-            </motion.div>
-            <div className="px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-bold opacity-50">
-              NOT PINK
-            </div>
-          </div>
-        </div>
-      );
-    case 'streaks':
-      return (
-        <div className="relative w-full h-full flex items-center justify-center">
-          <div className="flex items-end gap-1">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <motion.div
-                key={i}
-                className="w-8 rounded-t-lg"
-                style={{ 
-                  height: `${i * 16}px`, 
-                  background: `linear-gradient(to top, #f97316, #ef4444)` 
-                }}
-                initial={{ scaleY: 0 }}
-                animate={{ scaleY: 1 }}
-                transition={{ delay: i * 0.1, duration: 0.3 }}
-              />
-            ))}
-          </div>
-          <motion.div
-            className="absolute top-2 right-4"
-            animate={{ scale: [1, 1.3, 1], rotate: [0, 10, -10, 0] }}
-            transition={{ duration: 0.5, repeat: Infinity }}
-          >
-            <Flame className="w-10 h-10 text-orange-500" />
-          </motion.div>
-          <motion.span 
-            className="absolute bottom-2 text-3xl font-black text-orange-500"
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 0.5, repeat: Infinity }}
-          >
-            x5
-          </motion.span>
-        </div>
-      );
-    case 'lives':
-      return (
-        <div className="relative w-full h-full flex items-center justify-center gap-3">
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: i * 0.15, type: 'spring' }}
-            >
-              <Heart className="w-12 h-12 text-red-500 fill-red-500 drop-shadow-lg" />
-            </motion.div>
-          ))}
-        </div>
-      );
-    case 'daily':
-      return (
-        <div className="relative w-full h-full flex items-center justify-center">
-          <motion.div
-            className="relative"
-            animate={{ y: [0, -5, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-xl">
-              <Calendar className="w-10 h-10 text-white" />
-            </div>
-            <motion.div
-              className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-primary-foreground"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 1, repeat: Infinity }}
-            >
-              1
-            </motion.div>
-          </motion.div>
-        </div>
-      );
-    case 'ready':
-      return (
-        <div className="relative w-full h-full flex items-center justify-center">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            className="absolute w-40 h-40"
-          >
-            {[...Array(8)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-3 h-3 rounded-full bg-yellow-400"
-                style={{
-                  top: '50%',
-                  left: '50%',
-                  transform: `rotate(${i * 45}deg) translateY(-60px)`,
-                }}
-                animate={{ opacity: [0.3, 1, 0.3] }}
-                transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}
-              />
-            ))}
-          </motion.div>
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            <Trophy className="w-16 h-16 text-yellow-500 drop-shadow-lg" />
-          </motion.div>
-        </div>
-      );
-    default:
-      return null;
-  }
-}
 
 export function TutorialOverlay({ onComplete }: TutorialOverlayProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const step = TUTORIAL_STEPS[currentStep];
   const isLastStep = currentStep === TUTORIAL_STEPS.length - 1;
   const isFirstStep = currentStep === 0;
+  const progress = ((currentStep + 1) / TUTORIAL_STEPS.length) * 100;
 
   const nextStep = () => {
     if (isLastStep) {
@@ -228,119 +76,131 @@ export function TutorialOverlay({ onComplete }: TutorialOverlayProps) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-background/98 backdrop-blur-xl" />
-      <motion.div
-        className="absolute inset-0 opacity-30"
-        style={{
-          background: `radial-gradient(circle at 50% 30%, ${step.accent}40 0%, transparent 50%)`,
-        }}
-        animate={{ opacity: [0.2, 0.4, 0.2] }}
-        transition={{ duration: 3, repeat: Infinity }}
-      />
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" />
 
       <motion.div
-        className="relative w-full max-w-sm"
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.1 }}
+        className="relative w-full max-w-md"
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       >
-        {/* Skip button */}
-        <motion.button
-          onClick={onComplete}
-          className="absolute -top-12 right-0 text-muted-foreground hover:text-foreground text-sm flex items-center gap-1.5 transition-colors px-3 py-1.5 rounded-full hover:bg-muted/50"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Skip <X className="w-4 h-4" />
-        </motion.button>
-
-        {/* Main card */}
-        <div className="bg-card/80 backdrop-blur-sm rounded-3xl border border-border/50 overflow-hidden shadow-2xl">
-          {/* Visual area */}
-          <AnimatePresence mode="wait">
+        {/* Card */}
+        <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-2xl">
+          {/* Top progress bar */}
+          <div className="h-1 bg-muted">
             <motion.div
-              key={`visual-${currentStep}`}
-              className="h-48 relative overflow-hidden"
-              style={{ background: `linear-gradient(135deg, ${step.accent}15 0%, transparent 100%)` }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              className="h-full bg-primary"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            />
+          </div>
+
+          {/* Header with skip */}
+          <div className="flex items-center justify-between px-5 pt-4">
+            <span className="text-xs font-medium text-muted-foreground">
+              Step {currentStep + 1} of {TUTORIAL_STEPS.length}
+            </span>
+            <button
+              onClick={onComplete}
+              className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
             >
-              <TutorialVisual type={step.visual} accent={step.accent} />
-            </motion.div>
-          </AnimatePresence>
+              Skip <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
 
           {/* Content */}
-          <div className="p-6">
-            {/* Progress bar */}
-            <div className="flex gap-1.5 mb-6">
-              {TUTORIAL_STEPS.map((_, index) => (
-                <motion.div
-                  key={index}
-                  className="h-1 rounded-full flex-1 overflow-hidden bg-muted"
-                >
-                  <motion.div
-                    className="h-full rounded-full"
-                    style={{ backgroundColor: step.accent }}
-                    initial={{ width: index < currentStep ? '100%' : '0%' }}
-                    animate={{ width: index <= currentStep ? '100%' : '0%' }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </motion.div>
-              ))}
-            </div>
-
+          <div className="px-6 pb-6 pt-4">
             <AnimatePresence mode="wait">
               <motion.div
-                key={`content-${currentStep}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
+                key={currentStep}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.2 }}
+                className="space-y-5"
               >
-                {/* Title */}
-                <div className="mb-4">
-                  <p className="text-sm font-medium text-muted-foreground mb-1">{step.subtitle}</p>
-                  <h2 className="text-2xl font-bold" style={{ color: step.accent }}>{step.title}</h2>
+                {/* Icon */}
+                <div className="flex justify-center">
+                  <motion.div
+                    className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center"
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  >
+                    {step.icon ? (
+                      <step.icon className="w-8 h-8 text-primary" />
+                    ) : (
+                      <Image 
+                        src="/favicon.png" 
+                        alt="is it pink?" 
+                        width={40} 
+                        height={40}
+                      />
+                    )}
+                  </motion.div>
                 </div>
 
+                {/* Title */}
+                <h2 className="text-xl font-bold text-center text-foreground">
+                  {step.title}
+                </h2>
+
                 {/* Description */}
-                <p className="text-muted-foreground leading-relaxed mb-6">{step.description}</p>
+                <p className="text-sm text-muted-foreground text-center leading-relaxed">
+                  {step.description}
+                </p>
+
+                {/* Tip */}
+                {step.tip && (
+                  <div className="bg-primary/5 border border-primary/20 rounded-lg px-4 py-2.5">
+                    <p className="text-xs text-primary text-center font-medium">
+                      {step.tip}
+                    </p>
+                  </div>
+                )}
               </motion.div>
             </AnimatePresence>
 
             {/* Navigation */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 mt-6">
               {!isFirstStep && (
                 <motion.button
                   onClick={prevStep}
-                  className="w-12 h-12 rounded-xl border border-border hover:bg-muted flex items-center justify-center transition-colors"
-                  whileHover={{ scale: 1.05 }}
+                  className="w-12 h-11 rounded-xl border border-border hover:bg-muted flex items-center justify-center transition-colors"
                   whileTap={{ scale: 0.95 }}
                 >
-                  <ChevronLeft className="w-5 h-5" />
+                  <ChevronLeft className="w-5 h-5 text-muted-foreground" />
                 </motion.button>
               )}
               <motion.button
                 onClick={nextStep}
-                className="flex-1 h-12 rounded-xl font-semibold flex items-center justify-center gap-2 text-white transition-all"
-                style={{ backgroundColor: step.accent }}
-                whileHover={{ scale: 1.02, filter: 'brightness(1.1)' }}
+                className="flex-1 h-11 rounded-xl font-semibold text-sm flex items-center justify-center gap-1.5 bg-primary text-primary-foreground transition-all hover:brightness-110"
                 whileTap={{ scale: 0.98 }}
               >
-                {isLastStep ? "Start Playing" : 'Continue'}
-                {!isLastStep && <ChevronRight className="w-5 h-5" />}
+                {isLastStep ? "Let's Go!" : 'Next'}
+                {!isLastStep && <ChevronRight className="w-4 h-4" />}
               </motion.button>
+            </div>
+
+            {/* Dots indicator */}
+            <div className="flex justify-center gap-1.5 mt-4">
+              {TUTORIAL_STEPS.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentStep(index)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    index === currentStep 
+                      ? 'bg-primary w-5' 
+                      : index < currentStep 
+                        ? 'bg-primary/50' 
+                        : 'bg-muted-foreground/30'
+                  }`}
+                />
+              ))}
             </div>
           </div>
         </div>
-
-        {/* Step indicator */}
-        <p className="text-center text-muted-foreground/60 text-xs mt-4 font-medium">
-          {currentStep + 1} / {TUTORIAL_STEPS.length}
-        </p>
       </motion.div>
     </motion.div>
   );
