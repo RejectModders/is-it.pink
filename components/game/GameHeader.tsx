@@ -1,7 +1,8 @@
 'use client';
 
-import { Github, Moon, Sun, Volume2, VolumeX, Eye, Vibrate, Sparkles } from 'lucide-react';
+import { Github, Moon, Sun, Volume2, VolumeX, Eye, Vibrate } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 interface GameHeaderProps {
   darkMode: boolean;
@@ -41,8 +42,14 @@ export function GameHeader({
         whileTap={{ scale: 0.98 }}
         transition={{ duration: 0.06 }}
       >
-        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-primary to-accent shadow-lg shadow-primary/30 flex items-center justify-center">
-          <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary-foreground" />
+        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-primary to-accent shadow-lg shadow-primary/30 flex items-center justify-center p-1">
+          <Image 
+            src="/favicon.png" 
+            alt="is it pink?" 
+            width={32} 
+            height={32}
+            className="w-full h-full"
+          />
         </div>
         <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">is it pink?</h1>
       </motion.div>
