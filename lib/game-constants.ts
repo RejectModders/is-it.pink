@@ -161,3 +161,74 @@ export interface GameStats {
 export type GameState = 'menu' | 'playing' | 'gameover' | 'help' | 'stats' | 'achievements' | 'daily' | 'settings';
 export type SoundPack = keyof typeof SOUND_PACKS;
 export type ColorTheme = keyof typeof COLOR_THEMES;
+
+// 50 Daily Challenge Types
+export interface DailyChallenge {
+  id: number;
+  name: string;
+  description: string;
+  rounds: number;
+  lives: number;
+  timeLimit?: number; // seconds per round, undefined = no limit
+  pinkRatio: number; // 0-1, chance of pink appearing
+  difficulty: 'easy' | 'medium' | 'hard';
+  modifier?: 'inverted' | 'speed' | 'marathon' | 'precision' | 'chaos';
+}
+
+export const DAILY_CHALLENGES: DailyChallenge[] = [
+  // Easy challenges (1-15)
+  { id: 1, name: 'Warm Up', description: 'A gentle start - mostly pinks!', rounds: 15, lives: 3, pinkRatio: 0.7, difficulty: 'easy' },
+  { id: 2, name: 'Pink Paradise', description: 'Pinks everywhere!', rounds: 20, lives: 5, pinkRatio: 0.8, difficulty: 'easy' },
+  { id: 3, name: 'Beginner\'s Luck', description: 'Extra lives to help you out', rounds: 15, lives: 5, pinkRatio: 0.5, difficulty: 'easy' },
+  { id: 4, name: 'Chill Vibes', description: 'Take your time, no rush', rounds: 25, lives: 4, pinkRatio: 0.5, difficulty: 'easy' },
+  { id: 5, name: 'Sunday Stroll', description: 'A relaxing challenge', rounds: 20, lives: 4, pinkRatio: 0.6, difficulty: 'easy' },
+  { id: 6, name: 'Soft Start', description: 'Ease into pink detection', rounds: 12, lives: 3, pinkRatio: 0.65, difficulty: 'easy' },
+  { id: 7, name: 'Pink Primer', description: 'Learn to love pink', rounds: 18, lives: 4, pinkRatio: 0.55, difficulty: 'easy' },
+  { id: 8, name: 'Easy Breezy', description: 'Light and simple', rounds: 15, lives: 4, pinkRatio: 0.6, difficulty: 'easy' },
+  { id: 9, name: 'Comfort Zone', description: 'Stay comfortable', rounds: 20, lives: 5, pinkRatio: 0.55, difficulty: 'easy' },
+  { id: 10, name: 'Training Day', description: 'Build your skills', rounds: 16, lives: 4, pinkRatio: 0.5, difficulty: 'easy' },
+  { id: 11, name: 'Gentle Giant', description: 'Many rounds, many chances', rounds: 30, lives: 6, pinkRatio: 0.5, difficulty: 'easy' },
+  { id: 12, name: 'Pink Promise', description: 'Trust the pink', rounds: 15, lives: 3, pinkRatio: 0.7, difficulty: 'easy' },
+  { id: 13, name: 'Safety Net', description: 'Lots of lives to spare', rounds: 20, lives: 7, pinkRatio: 0.45, difficulty: 'easy' },
+  { id: 14, name: 'Rookie Run', description: 'For the newcomers', rounds: 12, lives: 4, pinkRatio: 0.6, difficulty: 'easy' },
+  { id: 15, name: 'Light Touch', description: 'Barely a challenge', rounds: 10, lives: 3, pinkRatio: 0.7, difficulty: 'easy' },
+  
+  // Medium challenges (16-35)
+  { id: 16, name: 'Balanced Act', description: 'Equal parts pink and not', rounds: 20, lives: 3, pinkRatio: 0.5, difficulty: 'medium' },
+  { id: 17, name: 'Quick Thinker', description: 'Speed round!', rounds: 15, lives: 2, timeLimit: 3, pinkRatio: 0.5, difficulty: 'medium', modifier: 'speed' },
+  { id: 18, name: 'Tricky Colors', description: 'Not everything is as it seems', rounds: 20, lives: 2, pinkRatio: 0.4, difficulty: 'medium' },
+  { id: 19, name: 'Pink or Swim', description: 'Sink or swim time', rounds: 25, lives: 2, pinkRatio: 0.5, difficulty: 'medium' },
+  { id: 20, name: 'The Deceiver', description: 'Many imposters among us', rounds: 20, lives: 3, pinkRatio: 0.35, difficulty: 'medium' },
+  { id: 21, name: 'Marathon Lite', description: 'A longer journey', rounds: 35, lives: 4, pinkRatio: 0.5, difficulty: 'medium', modifier: 'marathon' },
+  { id: 22, name: 'Precision Mode', description: 'Every answer counts', rounds: 15, lives: 1, pinkRatio: 0.5, difficulty: 'medium', modifier: 'precision' },
+  { id: 23, name: 'Color Chaos', description: 'Expect the unexpected', rounds: 20, lives: 3, pinkRatio: 0.45, difficulty: 'medium', modifier: 'chaos' },
+  { id: 24, name: 'Mind Games', description: 'Trust your instincts', rounds: 18, lives: 2, pinkRatio: 0.4, difficulty: 'medium' },
+  { id: 25, name: 'Steady Hands', description: 'Stay calm under pressure', rounds: 20, lives: 2, timeLimit: 5, pinkRatio: 0.5, difficulty: 'medium', modifier: 'speed' },
+  { id: 26, name: 'Pink Detective', description: 'Find the real pinks', rounds: 22, lives: 3, pinkRatio: 0.4, difficulty: 'medium' },
+  { id: 27, name: 'No Second Chances', description: 'One life, medium length', rounds: 15, lives: 1, pinkRatio: 0.55, difficulty: 'medium', modifier: 'precision' },
+  { id: 28, name: 'The Grind', description: 'Endurance test', rounds: 40, lives: 5, pinkRatio: 0.5, difficulty: 'medium', modifier: 'marathon' },
+  { id: 29, name: 'Faker Alert', description: 'Many fakes, stay sharp', rounds: 20, lives: 3, pinkRatio: 0.3, difficulty: 'medium' },
+  { id: 30, name: 'Snap Decision', description: 'Quick choices required', rounds: 18, lives: 2, timeLimit: 4, pinkRatio: 0.5, difficulty: 'medium', modifier: 'speed' },
+  { id: 31, name: 'Twilight Zone', description: 'Colors get weird', rounds: 25, lives: 3, pinkRatio: 0.45, difficulty: 'medium', modifier: 'chaos' },
+  { id: 32, name: 'Double Trouble', description: 'Twice the challenge', rounds: 30, lives: 3, pinkRatio: 0.45, difficulty: 'medium' },
+  { id: 33, name: 'Pressure Cooker', description: 'Heat is on', rounds: 20, lives: 2, timeLimit: 4, pinkRatio: 0.45, difficulty: 'medium', modifier: 'speed' },
+  { id: 34, name: 'The Test', description: 'Prove yourself', rounds: 25, lives: 2, pinkRatio: 0.4, difficulty: 'medium' },
+  { id: 35, name: 'Wild Card', description: 'Anything goes', rounds: 22, lives: 3, pinkRatio: 0.5, difficulty: 'medium', modifier: 'chaos' },
+  
+  // Hard challenges (36-50)
+  { id: 36, name: 'Nightmare Mode', description: 'Only for the brave', rounds: 25, lives: 1, pinkRatio: 0.35, difficulty: 'hard', modifier: 'precision' },
+  { id: 37, name: 'Speed Demon', description: 'Blink and you miss it', rounds: 20, lives: 2, timeLimit: 2, pinkRatio: 0.5, difficulty: 'hard', modifier: 'speed' },
+  { id: 38, name: 'Imposter Invasion', description: 'Pinks are rare', rounds: 25, lives: 2, pinkRatio: 0.25, difficulty: 'hard' },
+  { id: 39, name: 'Ultimate Marathon', description: '50 rounds of madness', rounds: 50, lives: 3, pinkRatio: 0.45, difficulty: 'hard', modifier: 'marathon' },
+  { id: 40, name: 'Lightning Round', description: 'React instantly', rounds: 15, lives: 1, timeLimit: 2, pinkRatio: 0.5, difficulty: 'hard', modifier: 'speed' },
+  { id: 41, name: 'Pure Chaos', description: 'Total randomness', rounds: 30, lives: 2, pinkRatio: 0.4, difficulty: 'hard', modifier: 'chaos' },
+  { id: 42, name: 'The Gauntlet', description: 'Run the gauntlet', rounds: 35, lives: 2, pinkRatio: 0.4, difficulty: 'hard' },
+  { id: 43, name: 'Perfection Required', description: 'No mistakes allowed', rounds: 20, lives: 1, pinkRatio: 0.45, difficulty: 'hard', modifier: 'precision' },
+  { id: 44, name: 'Extreme Speed', description: '1.5 seconds per round', rounds: 18, lives: 2, timeLimit: 1.5, pinkRatio: 0.5, difficulty: 'hard', modifier: 'speed' },
+  { id: 45, name: 'Color Blindness', description: 'The hardest colors', rounds: 25, lives: 2, pinkRatio: 0.35, difficulty: 'hard' },
+  { id: 46, name: 'The Impossible', description: 'Can you beat it?', rounds: 30, lives: 1, pinkRatio: 0.4, difficulty: 'hard', modifier: 'precision' },
+  { id: 47, name: 'Chaos Marathon', description: 'Long and unpredictable', rounds: 45, lives: 3, pinkRatio: 0.4, difficulty: 'hard', modifier: 'chaos' },
+  { id: 48, name: 'Final Boss', description: 'The ultimate test', rounds: 25, lives: 1, timeLimit: 3, pinkRatio: 0.35, difficulty: 'hard', modifier: 'speed' },
+  { id: 49, name: 'Legendary', description: 'Become a legend', rounds: 40, lives: 2, pinkRatio: 0.35, difficulty: 'hard' },
+  { id: 50, name: 'Pink Master', description: 'Master all pinks', rounds: 30, lives: 1, timeLimit: 2.5, pinkRatio: 0.4, difficulty: 'hard', modifier: 'speed' },
+];

@@ -17,7 +17,8 @@ import {
   type ColorTheme,
   type GameStats,
 } from '@/lib/game-constants';
-import { generateThemeColors, getDailySequence } from '@/lib/game-utils';
+import { generateThemeColors, getDailySequence, getDailyChallenge } from '@/lib/game-utils';
+import { type DailyChallenge } from '@/lib/game-constants';
 
 import {
   GameHeader,
@@ -81,6 +82,8 @@ export default function IsItPink() {
   const [dailyIndex, setDailyIndex] = useState(0);
   const [todayDate, setTodayDate] = useState('');
   const [dailyCompleted, setDailyCompleted] = useState(false);
+  const [dailyChallenge, setDailyChallenge] = useState<DailyChallenge | null>(null);
+  const [dailyTimeLeft, setDailyTimeLeft] = useState<number | null>(null);
   const [soundPack, setSoundPack] = useState<SoundPack>('classic');
   const [colorTheme, setColorTheme] = useState<ColorTheme>('pink');
   
@@ -136,6 +139,7 @@ export default function IsItPink() {
     const today = new Date().toISOString().split('T')[0];
     setTodayDate(today);
     setDailySequence(getDailySequence(today));
+    setDailyChallenge(getDailyChallenge(today));
   }, []);
 
   // Apply dark mode
@@ -165,6 +169,25 @@ export default function IsItPink() {
     
     return () => clearInterval(timer);
   }, [timedMode, gameState, timeLeft, isDailyMode]);
+
+  // Timer for daily challenge per-round time limit
+  useEffect(() => {
+    if (!isDailyMode || gameState !== 'playing' || !dailyTimeLeft || dailyTimeLeft <= 0) return;
+    
+    const timer = setInterval(() => {
+      setDailyTimeLeft(prev => {
+        if (prev === null) return null;
+        if (prev <= 0.1) {
+          // Time ran out - treat as wrong answer
+          handleGuess(false);
+          return dailyChallenge?.timeLimit || null;
+        }
+        return prev - 0.1;
+      });
+    }, 100);
+    
+    return () => clearInterval(timer);
+  }, [isDailyMode, gameState, dailyTimeLeft]);
 
   const triggerHaptic = (type: 'light' | 'medium' | 'heavy') => {
     if (!hapticEnabled || !navigator.vibrate) return;
@@ -276,7 +299,16 @@ export default function IsItPink() {
     setIsDailyMode(daily);
     setGameState('playing');
     setScore(0);
-    setLives(daily ? 1 : (timedMode ? 999 : 3));
+    
+    // Use daily challenge settings if in daily mode
+    if (daily && dailyChallenge) {
+      setLives(dailyChallenge.lives);
+      setDailyTimeLeft(dailyChallenge.timeLimit || null);
+    } else {
+      setLives(timedMode ? 999 : 3);
+      setDailyTimeLeft(null);
+    }
+    
     setStreak(0);
     setMaxStreak(0);
     setMultiplier(1);
@@ -445,6 +477,10 @@ export default function IsItPink() {
             setCurrentColorName(next.color.name);
             setIsPink(next.isPink);
             setColorKey(prev => prev + 1);
+            // Reset timer for next round
+            if (dailyChallenge?.timeLimit) {
+              setDailyTimeLeft(dailyChallenge.timeLimit);
+            }
           }
         } else {
           generateColor();
@@ -564,6 +600,7 @@ export default function IsItPink() {
                 startGame={startGame}
                 setGameState={setGameState}
                 playSound={playSound}
+                dailyChallenge={dailyChallenge}
               />
             )}
 
@@ -625,6 +662,8 @@ export default function IsItPink() {
                 isTransitioning={isTransitioning}
                 colorBoxRef={colorBoxRef}
                 handleGuess={handleGuess}
+                dailyTimeLeft={dailyTimeLeft}
+                dailyChallengeName={dailyChallenge?.name}
               />
             )}
 

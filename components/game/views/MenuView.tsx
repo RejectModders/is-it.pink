@@ -1,8 +1,8 @@
 'use client';
 
-import { Github, Trophy, Zap, Target, Heart, Info, Clock, Crown, ChevronRight, Calendar, Check, Award, BarChart3, Palette, Sparkles } from 'lucide-react';
+import { Github, Trophy, Zap, Target, Heart, Info, Clock, Crown, ChevronRight, Calendar, Check, Award, BarChart3, Palette, Sparkles, Timer } from 'lucide-react';
 import { motion } from 'framer-motion';
-import type { GameState } from '@/lib/game-constants';
+import type { GameState, DailyChallenge } from '@/lib/game-constants';
 
 interface MenuViewProps {
   highScore: number;
@@ -14,6 +14,7 @@ interface MenuViewProps {
   startGame: (daily?: boolean) => void;
   setGameState: (state: GameState) => void;
   playSound: (type: 'correct' | 'wrong' | 'click') => void;
+  dailyChallenge: DailyChallenge | null;
 }
 
 export function MenuView({
@@ -26,7 +27,13 @@ export function MenuView({
   startGame,
   setGameState,
   playSound,
+  dailyChallenge,
 }: MenuViewProps) {
+  const difficultyColor = dailyChallenge ? {
+    easy: 'text-green-500',
+    medium: 'text-yellow-500',
+    hard: 'text-red-500',
+  }[dailyChallenge.difficulty] : '';
   return (
     <motion.div 
       key="menu"
@@ -80,14 +87,37 @@ export function MenuView({
               {hasDoneDaily ? <Check className="w-6 h-6 text-muted-foreground" /> : <Calendar className="w-6 h-6 text-primary-foreground" />}
             </div>
             <div>
-              <div className="font-bold text-lg">Daily Challenge</div>
+              <div className="font-bold text-lg flex items-center gap-2">
+                Daily Challenge
+                {dailyChallenge && !hasDoneDaily && (
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full bg-muted capitalize ${difficultyColor}`}>
+                    {dailyChallenge.difficulty}
+                  </span>
+                )}
+              </div>
               <div className="text-sm text-muted-foreground">
-                {hasDoneDaily ? 'Completed! Come back tomorrow' : '20 colors, 1 life. Same for everyone!'}
+                {hasDoneDaily ? 'Completed! Come back tomorrow' : dailyChallenge ? (
+                  <span className="flex flex-col gap-0.5">
+                    <span className="font-medium text-foreground">{dailyChallenge.name}</span>
+                    <span className="flex items-center gap-2 text-xs">
+                      <span>{dailyChallenge.rounds} rounds</span>
+                      <span>{dailyChallenge.lives} {dailyChallenge.lives === 1 ? 'life' : 'lives'}</span>
+                      {dailyChallenge.timeLimit && (
+                        <span className="flex items-center gap-0.5">
+                          <Timer className="w-3 h-3" />{dailyChallenge.timeLimit}s
+                        </span>
+                      )}
+                    </span>
+                  </span>
+                ) : '20 colors, 1 life. Same for everyone!'}
               </div>
             </div>
           </div>
           {!hasDoneDaily && <ChevronRight className="w-5 h-5 text-primary" />}
         </div>
+        {dailyChallenge && !hasDoneDaily && (
+          <div className="mt-2 text-xs text-muted-foreground italic">{dailyChallenge.description}</div>
+        )}
       </motion.button>
 
       <motion.div 

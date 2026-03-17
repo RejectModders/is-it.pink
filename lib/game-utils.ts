@@ -1,4 +1,4 @@
-import { PINK_COLORS, NOT_PINK_COLORS } from './game-constants';
+import { PINK_COLORS, NOT_PINK_COLORS, DAILY_CHALLENGES, DailyChallenge } from './game-constants';
 
 // Helper function to convert hex to HSL
 export function hexToHSL(hex: string): { h: number; s: number; l: number } {
@@ -48,13 +48,26 @@ export function seededRandom(seed: number) {
   return x - Math.floor(x);
 }
 
+// Get the daily challenge for a specific date (deterministic - same challenge for everyone on that day)
+export function getDailyChallenge(date: string): DailyChallenge {
+  // Create a deterministic seed from the date
+  const dateParts = date.split('-').map(Number);
+  const daysSinceEpoch = Math.floor(new Date(dateParts[0], dateParts[1] - 1, dateParts[2]).getTime() / (1000 * 60 * 60 * 24));
+  
+  // Use the day to pick a challenge (cycles through all 50)
+  const challengeIndex = daysSinceEpoch % DAILY_CHALLENGES.length;
+  return DAILY_CHALLENGES[challengeIndex];
+}
+
+// Generate the color sequence for a daily challenge
 export function getDailySequence(date: string): Array<{ color: { hex: string; name: string }; isPink: boolean }> {
+  const challenge = getDailyChallenge(date);
   const seed = date.split('-').reduce((acc, val) => acc + parseInt(val), 0) * 12345;
   const sequence: Array<{ color: { hex: string; name: string }; isPink: boolean }> = [];
   
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < challenge.rounds; i++) {
     const rand = seededRandom(seed + i * 1000);
-    const isPink = rand < 0.5;
+    const isPink = rand < challenge.pinkRatio;
     const colorArray = isPink ? PINK_COLORS : NOT_PINK_COLORS;
     const colorIndex = Math.floor(seededRandom(seed + i * 2000) * colorArray.length);
     sequence.push({ color: colorArray[colorIndex], isPink });

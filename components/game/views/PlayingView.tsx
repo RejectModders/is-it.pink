@@ -25,6 +25,8 @@ interface PlayingViewProps {
   isTransitioning: boolean;
   colorBoxRef: React.RefObject<HTMLDivElement>;
   handleGuess: (guess: 'pink' | 'notpink', e?: React.MouseEvent) => void;
+  dailyTimeLeft: number | null;
+  dailyChallengeName?: string;
 }
 
 function StatCard({ icon: Icon, label, value, color = 'text-foreground' }: { icon: React.ElementType, label: string, value: string | number, color?: string }) {
@@ -64,6 +66,8 @@ export function PlayingView({
   isTransitioning,
   colorBoxRef,
   handleGuess,
+  dailyTimeLeft,
+  dailyChallengeName,
 }: PlayingViewProps) {
   return (
     <motion.div 
@@ -76,11 +80,27 @@ export function PlayingView({
     >
       {/* Daily Progress */}
       {isDailyMode && (
-        <div className="text-center">
+        <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30">
             <Calendar className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold">Daily Challenge: {dailyIndex + 1} / {dailySequenceLength}</span>
+            <span className="text-sm font-semibold">
+              {dailyChallengeName ? `${dailyChallengeName}: ` : 'Daily: '}{dailyIndex + 1} / {dailySequenceLength}
+            </span>
           </div>
+          {dailyTimeLeft !== null && (
+            <div className="flex justify-center">
+              <motion.div 
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${dailyTimeLeft <= 1 ? 'bg-destructive/20 border-destructive/50' : 'bg-accent/10 border-accent/30'} border`}
+                animate={dailyTimeLeft <= 1 ? { scale: [1, 1.05, 1] } : {}}
+                transition={{ duration: 0.3, repeat: dailyTimeLeft <= 1 ? Infinity : 0 }}
+              >
+                <Clock className={`w-4 h-4 ${dailyTimeLeft <= 1 ? 'text-destructive' : 'text-accent'}`} />
+                <span className={`text-sm font-bold tabular-nums ${dailyTimeLeft <= 1 ? 'text-destructive' : 'text-accent'}`}>
+                  {dailyTimeLeft.toFixed(1)}s
+                </span>
+              </motion.div>
+            </div>
+          )}
         </div>
       )}
 
@@ -90,8 +110,8 @@ export function PlayingView({
         <StatCard 
           icon={timedMode && !isDailyMode ? Clock : Heart} 
           label={timedMode && !isDailyMode ? 'Time' : 'Lives'} 
-          value={timedMode && !isDailyMode ? `${timeLeft}s` : (isDailyMode ? '1' : lives)} 
-          color={timedMode && !isDailyMode && timeLeft <= 10 ? 'text-destructive' : ''} 
+          value={timedMode && !isDailyMode ? `${timeLeft}s` : lives} 
+          color={timedMode && !isDailyMode && timeLeft <= 10 ? 'text-destructive' : (lives <= 1 ? 'text-destructive' : '')} 
         />
         <StatCard icon={Flame} label="Streak" value={streak} color="text-accent" />
         <StatCard icon={Zap} label="Multi" value={`${multiplier.toFixed(1)}x`} />
