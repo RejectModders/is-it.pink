@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { ServiceWorkerRegistration } from '@/components/service-worker-registration'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -24,7 +25,14 @@ export const metadata: Metadata = {
     siteName: 'is it pink?',
     locale: 'en_US',
     type: 'website',
-    countryName: 'is it pink?',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'is it pink? - The Color Guessing Game',
+      },
+    ],
   },
   other: {
     'theme-color': '#ec4899',
@@ -36,6 +44,11 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
   },
   icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.png', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
     apple: '/apple-icon.png',
   },
   keywords: ['pink', 'color game', 'guessing game', 'mini game', 'color perception', 'fun game'],
@@ -52,17 +65,33 @@ export const viewport = {
   ],
 }
 
+// Script to prevent flash of wrong theme
+const themeScript = `
+  (function() {
+    try {
+      var darkMode = localStorage.getItem('pinkGameDarkMode');
+      if (darkMode === 'true' || (!darkMode && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (e) {}
+  })();
+`;
+
 export default function RootLayout({
-                                     children,
-                                   }: Readonly<{
+  children,
+}: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-      <html lang="en">
-      <body className="font-sans antialiased">
-      {children}
-      <Analytics />
+    <html lang="en" className="dark" style={{ backgroundColor: '#1a0f16' }}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="font-sans antialiased bg-background text-foreground">
+        {children}
+        <Analytics />
+        <ServiceWorkerRegistration />
       </body>
-      </html>
+    </html>
   )
 }
