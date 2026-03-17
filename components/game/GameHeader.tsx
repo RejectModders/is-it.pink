@@ -42,15 +42,13 @@ export function GameHeader({
         whileTap={{ scale: 0.98 }}
         transition={{ duration: 0.06 }}
       >
-        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-primary to-accent shadow-lg shadow-primary/30 flex items-center justify-center p-1">
-          <Image 
+        <Image 
             src="/favicon.png" 
             alt="is it pink?" 
-            width={32} 
-            height={32}
-            className="w-full h-full"
+            width={36} 
+            height={36}
+            className="w-8 h-8 sm:w-9 sm:h-9"
           />
-        </div>
         <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">is it pink?</h1>
       </motion.div>
       

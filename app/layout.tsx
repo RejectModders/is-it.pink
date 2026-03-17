@@ -65,18 +65,33 @@ export const viewport = {
   ],
 }
 
+// Script to prevent flash of wrong theme
+const themeScript = `
+  (function() {
+    try {
+      var darkMode = localStorage.getItem('pinkGameDarkMode');
+      if (darkMode === 'true' || (!darkMode && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    } catch (e) {}
+  })();
+`;
+
 export default function RootLayout({
-                                     children,
-                                   }: Readonly<{
+  children,
+}: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-      <html lang="en">
-      <body className="font-sans antialiased">
-      {children}
-      <Analytics />
-      <ServiceWorkerRegistration />
+    <html lang="en" className="dark" style={{ backgroundColor: '#1a0f16' }}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
+      <body className="font-sans antialiased bg-background text-foreground">
+        {children}
+        <Analytics />
+        <ServiceWorkerRegistration />
       </body>
-      </html>
+    </html>
   )
 }

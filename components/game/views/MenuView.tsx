@@ -1,7 +1,8 @@
 'use client';
 
-import { Github, Trophy, Zap, Target, Heart, Info, Clock, Crown, ChevronRight, Calendar, Check, Award, BarChart3, Palette, Sparkles, Timer } from 'lucide-react';
+import { Github, Trophy, Zap, Target, Heart, Info, Clock, Crown, ChevronRight, Calendar, Check, Award, BarChart3, Palette, Timer } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import type { GameState, DailyChallenge } from '@/lib/game-constants';
 
 interface MenuViewProps {
@@ -50,11 +51,16 @@ export function MenuView({
       >
         <div className="flex items-center justify-center gap-3 mb-4">
           <motion.div 
-            className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-primary to-accent shadow-2xl shadow-primary/40 flex items-center justify-center"
             animate={{ rotate: [0, 5, -5, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 text-primary-foreground" />
+            <Image 
+              src="/favicon.png" 
+              alt="is it pink?" 
+              width={80} 
+              height={80}
+              className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-2xl"
+            />
           </motion.div>
         </div>
         <h2 className="text-2xl sm:text-3xl font-bold mb-1 text-muted-foreground">Welcome to</h2>
