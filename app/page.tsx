@@ -615,7 +615,7 @@ export default function IsItPink() {
       setMultiplier(prev => Math.min(prev + 0.5, 5));
       createParticles(true, currentColor, e?.clientX, e?.clientY);
       setPulseCorrect(true);
-      setTimeout(() => setPulseCorrect(false), 300);
+      setTimeout(() => setPulseCorrect(false), 200);
       
       if (isDailyMode) {
         setDailyIndex(prev => prev + 1);
@@ -637,7 +637,7 @@ export default function IsItPink() {
       createParticles(false, '#ef4444', e?.clientX, e?.clientY);
       setShakeScreen(true);
       triggerHaptic('heavy');
-      setTimeout(() => setShakeScreen(false), 400);
+      setTimeout(() => setShakeScreen(false), 300);
     }
 
     // Check if daily is complete
@@ -645,7 +645,7 @@ export default function IsItPink() {
       setTimeout(() => {
         setGameState('gameover');
         saveStats();
-      }, 700);
+      }, 400);
       return;
     }
 
@@ -665,9 +665,9 @@ export default function IsItPink() {
         }
         setIsTransitioning(false);
       }
-    }, 700);
+    }, 400);
 
-    setTimeout(() => setMessage(''), 1200);
+    setTimeout(() => setMessage(''), 600);
   };
 
   const handleKeyPress = useCallback((e: KeyboardEvent) => {
@@ -790,7 +790,7 @@ export default function IsItPink() {
   );
 
   return (
-    <div className={`min-h-screen min-h-[100dvh] transition-colors duration-300 ${shakeScreen ? 'animate-shake' : ''}`}>
+    <div className={`min-h-screen min-h-[100dvh] transition-colors duration-100 ${shakeScreen ? 'animate-shake' : ''}`}>
       <div className="min-h-screen min-h-[100dvh] bg-background text-foreground flex flex-col relative overflow-hidden">
         {/* Background Pattern */}
         <div className="fixed inset-0 opacity-[0.02] dark:opacity-[0.03] pointer-events-none">
@@ -858,8 +858,9 @@ export default function IsItPink() {
                   <motion.button
                     onClick={shareToTwitter}
                     className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#1DA1F2]/10 hover:bg-[#1DA1F2]/20 transition-colors"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.06 }}
                   >
                     <Twitter className="w-6 h-6 text-[#1DA1F2]" />
                     <span className="text-xs font-medium">Twitter</span>
@@ -867,8 +868,9 @@ export default function IsItPink() {
                   <motion.button
                     onClick={shareToWhatsApp}
                     className="flex flex-col items-center gap-2 p-4 rounded-xl bg-[#25D366]/10 hover:bg-[#25D366]/20 transition-colors"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.06 }}
                   >
                     <MessageCircle className="w-6 h-6 text-[#25D366]" />
                     <span className="text-xs font-medium">WhatsApp</span>
@@ -876,8 +878,9 @@ export default function IsItPink() {
                   <motion.button
                     onClick={copyToClipboard}
                     className="flex flex-col items-center gap-2 p-4 rounded-xl bg-muted hover:bg-muted/80 transition-colors"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.06 }}
                   >
                     {copied ? <Check className="w-6 h-6 text-green-500" /> : <Copy className="w-6 h-6" />}
                     <span className="text-xs font-medium">{copied ? 'Copied!' : 'Copy'}</span>
@@ -887,9 +890,10 @@ export default function IsItPink() {
                 <motion.button
                   onClick={copyToClipboard}
                   className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
+whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.06 }}
+                    >
                   <Link2 className="w-4 h-4" />
                   {copied ? 'Copied to Clipboard!' : 'Copy Link'}
                 </motion.button>
@@ -917,7 +921,7 @@ export default function IsItPink() {
                     rotate: Math.random() * 720 - 360,
                     x: Math.random() * 200 - 100,
                   }}
-                  transition={{ duration: 2 + Math.random() * 2, ease: 'easeOut', delay: Math.random() * 0.5 }}
+                  transition={{ duration: 1 + Math.random() * 0.5, ease: 'easeOut' }}
                 />
               ))}
             </div>
@@ -938,10 +942,10 @@ export default function IsItPink() {
         >
           <motion.div 
             className="flex items-center gap-2 cursor-pointer"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => gameState !== 'playing' && setGameState('menu')}
-          >
+whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          transition={{ duration: 0.06 }}
+                        >
             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-primary to-accent shadow-lg shadow-primary/30 flex items-center justify-center">
               <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary-foreground" />
             </div>
@@ -957,8 +961,9 @@ export default function IsItPink() {
               }}
               className={`p-2 sm:p-2.5 rounded-xl transition-colors ${colorBlindMode ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
               title="Color blind mode"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ duration: 0.08 }}
             >
               <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
             </motion.button>
@@ -971,8 +976,9 @@ export default function IsItPink() {
               }}
               className={`p-2 sm:p-2.5 rounded-xl transition-colors ${hapticEnabled ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
               title="Haptic feedback"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ duration: 0.08 }}
             >
               <Vibrate className="w-4 h-4 sm:w-5 sm:h-5" />
             </motion.button>
@@ -985,8 +991,9 @@ export default function IsItPink() {
               }}
               className="p-2 sm:p-2.5 rounded-xl hover:bg-muted transition-colors"
               title="Toggle sound"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ duration: 0.08 }}
             >
               {soundEnabled ? <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" /> : <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" />}
             </motion.button>
@@ -998,8 +1005,9 @@ export default function IsItPink() {
               }}
               className="p-2 sm:p-2.5 rounded-xl hover:bg-muted transition-colors"
               title="Toggle dark mode"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ duration: 0.08 }}
             >
               {darkMode ? <Sun className="w-4 h-4 sm:w-5 sm:h-5" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5" />}
             </motion.button>
@@ -1009,9 +1017,10 @@ export default function IsItPink() {
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition-all font-medium text-sm"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
+whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          transition={{ duration: 0.06 }}
+                        >
               <Github className="w-4 h-4" />
               GitHub
             </motion.a>
@@ -1028,12 +1037,12 @@ export default function IsItPink() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.12 }}
               >
                 <motion.div
                   initial={{ scale: 0.8 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
                   <div className="flex items-center justify-center gap-3 mb-4">
                     <motion.div 
@@ -1063,7 +1072,7 @@ export default function IsItPink() {
                   }`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 }}
+                  transition={{ duration: 0.1 }}
                   whileHover={!hasDoneDaily ? { scale: 1.02 } : {}}
                   whileTap={!hasDoneDaily ? { scale: 0.98 } : {}}
                   disabled={hasDoneDaily}
@@ -1088,7 +1097,7 @@ export default function IsItPink() {
                   className="bg-card p-4 sm:p-5 rounded-2xl border border-border"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
+                  transition={{ duration: 0.1 }}
                 >
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     {[
@@ -1102,7 +1111,7 @@ export default function IsItPink() {
                         className="flex items-center gap-2 p-2 rounded-lg bg-muted/50"
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 + i * 0.1 }}
+                        transition={{ duration: 0.08 }}
                       >
                         <item.icon className="text-primary shrink-0 w-4 h-4" />
                         <span className="font-medium">{item.text}</span>
@@ -1115,9 +1124,13 @@ export default function IsItPink() {
                   className="space-y-4"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
+                  transition={{ duration: 0.1 }}
                 >
-                  <div>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.1 }}
+                  >
                     <label className="text-xs font-semibold text-muted-foreground mb-2 block uppercase tracking-wider">Difficulty</label>
                     <div className="grid grid-cols-4 gap-2">
                       {(['easy', 'normal', 'hard', 'extreme'] as const).map((d, i) => (
@@ -1134,17 +1147,22 @@ export default function IsItPink() {
                           }`}
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
+                          transition={{ duration: 0.1 }}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.5 + i * 0.05 }}
+                          transition={{ duration: 0.08 }}
                         >
                           {d}
                         </motion.button>
                       ))}
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <div>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.1 }}
+                  >
                     <label className="text-xs font-semibold text-muted-foreground mb-2 block uppercase tracking-wider">Game Mode</label>
                     <div className="grid grid-cols-2 gap-2">
                       <motion.button
@@ -1157,9 +1175,10 @@ export default function IsItPink() {
                             ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30'
                             : 'bg-muted hover:bg-muted/80'
                         }`}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
+whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.06 }}
+                >
                         <Heart className="w-4 h-4" /> Classic
                       </motion.button>
                       <motion.button
@@ -1172,13 +1191,14 @@ export default function IsItPink() {
                             ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30'
                             : 'bg-muted hover:bg-muted/80'
                         }`}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
+whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.06 }}
+                >
                         <Clock className="w-4 h-4" /> Timed
                       </motion.button>
                     </div>
-                  </div>
+                  </motion.div>
 
                   <motion.button
                     onClick={() => {
@@ -1188,6 +1208,7 @@ export default function IsItPink() {
                     className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-accent text-primary-foreground font-bold hover:opacity-90 transition-all text-lg shadow-xl shadow-primary/30 flex items-center justify-center gap-2"
                     whileHover={{ scale: 1.02, boxShadow: '0 25px 50px -12px rgb(236 72 153 / 0.4)' }}
                     whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.08 }}
                   >
                     Play Now <ChevronRight className="w-5 h-5" />
                   </motion.button>
@@ -1199,9 +1220,10 @@ export default function IsItPink() {
                       playSound('click');
                       setGameState('help');
                     }}
-                    className="py-3 rounded-xl border border-border hover:bg-muted transition-colors text-sm font-semibold flex items-center justify-center gap-1.5"
+                    className="py-3 rounded-xl border border-border hover:bg-muted text-sm font-semibold flex items-center justify-center gap-1.5"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.08 }}
                   >
                     <Info className="w-4 h-4" />
                   </motion.button>
@@ -1210,9 +1232,10 @@ export default function IsItPink() {
                       playSound('click');
                       setGameState('stats');
                     }}
-                    className="py-3 rounded-xl border border-border hover:bg-muted transition-colors text-sm font-semibold flex items-center justify-center gap-1.5"
+                    className="py-3 rounded-xl border border-border hover:bg-muted text-sm font-semibold flex items-center justify-center gap-1.5"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.08 }}
                   >
                     <BarChart3 className="w-4 h-4" />
                   </motion.button>
@@ -1221,9 +1244,10 @@ export default function IsItPink() {
                       playSound('click');
                       setGameState('achievements');
                     }}
-                    className="py-3 rounded-xl border border-border hover:bg-muted transition-colors text-sm font-semibold flex items-center justify-center gap-1.5"
+                    className="py-3 rounded-xl border border-border hover:bg-muted text-sm font-semibold flex items-center justify-center gap-1.5"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.08 }}
                   >
                     <Award className="w-4 h-4" />
                   </motion.button>
@@ -1232,9 +1256,10 @@ export default function IsItPink() {
                       playSound('click');
                       setGameState('settings');
                     }}
-                    className="py-3 rounded-xl border border-border hover:bg-muted transition-colors text-sm font-semibold flex items-center justify-center gap-1.5"
+                    className="py-3 rounded-xl border border-border hover:bg-muted text-sm font-semibold flex items-center justify-center gap-1.5"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.08 }}
                   >
                     <Palette className="w-4 h-4" />
                   </motion.button>
@@ -1245,7 +1270,7 @@ export default function IsItPink() {
                     className="bg-gradient-to-r from-primary/10 to-accent/10 p-4 rounded-xl border border-primary/20 flex items-center justify-between"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.6 }}
+                    transition={{ duration: 0.15 }}
                   >
                     <div className="flex items-center gap-2">
                       <Crown className="w-5 h-5 text-primary" />
@@ -1259,11 +1284,10 @@ export default function IsItPink() {
                   href="https://github.com/RejectModders/is-it.pink"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-border hover:bg-muted transition-colors text-sm font-medium"
+                  className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-border hover:bg-muted text-sm font-medium"
                   whileHover={{ scale: 1.02 }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.7 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.08 }}
                 >
                   <Github className="w-4 h-4" />
                   Open Source on GitHub
@@ -1278,7 +1302,7 @@ export default function IsItPink() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.1 }}
               >
                 <h2 className="text-2xl sm:text-3xl font-bold flex items-center justify-center gap-2">
                   <Palette className="text-primary w-6 h-6" />
@@ -1305,9 +1329,10 @@ export default function IsItPink() {
                             ? 'bg-primary text-primary-foreground'
                             : 'bg-muted hover:bg-muted/80'
                         }`}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
+whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.06 }}
+                >
                         <div className="font-semibold text-sm">{SOUND_PACKS[pack].name}</div>
                         <div className={`text-xs ${soundPack === pack ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
                           {SOUND_PACKS[pack].description}
@@ -1340,9 +1365,10 @@ export default function IsItPink() {
                         style={{ 
                           background: `linear-gradient(135deg, ${COLOR_THEMES[theme].primary}20, ${COLOR_THEMES[theme].accent}20)` 
                         }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
+whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.06 }}
+                >
                         <div 
                           className="w-full h-2 rounded-full mb-2"
                           style={{ background: `linear-gradient(to right, ${COLOR_THEMES[theme].primary}, ${COLOR_THEMES[theme].accent})` }}
@@ -1360,9 +1386,10 @@ export default function IsItPink() {
                     setGameState('menu');
                   }}
                   className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
+whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.06 }}
+                    >
                   Back to Menu
                 </motion.button>
               </motion.div>
@@ -1375,7 +1402,7 @@ export default function IsItPink() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.1 }}
               >
                 <h2 className="text-2xl sm:text-3xl font-bold flex items-center justify-center gap-2">
                   <Award className="text-primary w-6 h-6" />
@@ -1395,7 +1422,7 @@ export default function IsItPink() {
                           className={`flex items-center gap-3 p-4 border-b border-border last:border-0 ${unlocked ? '' : 'opacity-50'}`}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: unlocked ? 1 : 0.5, x: 0 }}
-                          transition={{ delay: i * 0.05 }}
+                          transition={{ duration: 0.08 }}
                         >
                           <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
                             unlocked ? 'bg-gradient-to-br from-primary to-accent' : 'bg-muted'
@@ -1423,9 +1450,10 @@ export default function IsItPink() {
                     setGameState('menu');
                   }}
                   className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
+whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.06 }}
+                    >
                   Back to Menu
                 </motion.button>
               </motion.div>
@@ -1438,7 +1466,7 @@ export default function IsItPink() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.1 }}
               >
                 <h2 className="text-2xl sm:text-3xl font-bold flex items-center justify-center gap-2">
                   <Sparkles className="text-primary w-6 h-6" />
@@ -1457,7 +1485,7 @@ export default function IsItPink() {
                       key={item.title}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.1 }}
+                      transition={{ duration: 0.08 }}
                     >
                       <h3 className="font-bold mb-1 text-primary">{item.title}</h3>
                       <p className="text-muted-foreground leading-relaxed">{item.content}</p>
@@ -1471,9 +1499,10 @@ export default function IsItPink() {
                     setGameState('menu');
                   }}
                   className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
+whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.06 }}
+                    >
                   Back to Menu
                 </motion.button>
               </motion.div>
@@ -1486,7 +1515,7 @@ export default function IsItPink() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.1 }}
               >
                 <h2 className="text-2xl sm:text-3xl font-bold flex items-center justify-center gap-2">
                   <BarChart3 className="text-primary w-6 h-6" />
@@ -1507,7 +1536,7 @@ export default function IsItPink() {
                       className={`flex justify-between items-center py-3 ${i < 5 ? 'border-b border-border' : ''}`}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.1 }}
+                      transition={{ duration: 0.08 }}
                     >
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <item.icon className="w-4 h-4" />
@@ -1528,19 +1557,18 @@ export default function IsItPink() {
                     <div className="h-32">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={chartData}>
-                          <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }} stroke="var(--muted-foreground)" />
-                          <YAxis tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }} stroke="var(--muted-foreground)" />
+                          <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="currentColor" className="text-muted-foreground" />
+                          <YAxis tick={{ fontSize: 10 }} stroke="currentColor" className="text-muted-foreground" />
                           <Tooltip 
                             contentStyle={{ 
-                              background: 'var(--card)', 
-                              border: '1px solid var(--border)',
+                              background: 'hsl(var(--card))',
+                              border: '1px solid hsl(var(--border))',
                               borderRadius: '8px',
                               fontSize: '12px',
-                              color: 'var(--card-foreground)'
                             }}
-                            labelStyle={{ color: 'var(--card-foreground)' }}
+                            cursor={{ fill: 'hsl(var(--muted) / 0.3)' }}
                           />
-                          <Bar dataKey="score" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+                          <Bar dataKey="score" fill={COLOR_THEMES[colorTheme].primary} radius={[4, 4, 0, 0]} />
                         </BarChart>
                       </ResponsiveContainer>
                     </div>
@@ -1557,24 +1585,24 @@ export default function IsItPink() {
                     <div className="h-32">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={chartData}>
-                          <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }} stroke="var(--muted-foreground)" />
-                          <YAxis tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }} domain={[0, 100]} stroke="var(--muted-foreground)" />
+                          <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="currentColor" className="text-muted-foreground" />
+                          <YAxis tick={{ fontSize: 10 }} domain={[0, 100]} stroke="currentColor" className="text-muted-foreground" />
                           <Tooltip 
                             contentStyle={{ 
-                              background: 'var(--card)', 
-                              border: '1px solid var(--border)',
+                              background: 'hsl(var(--card))',
+                              border: '1px solid hsl(var(--border))',
                               borderRadius: '8px',
                               fontSize: '12px',
-                              color: 'var(--card-foreground)'
                             }}
-                            labelStyle={{ color: 'var(--card-foreground)' }}
+                            cursor={{ stroke: 'hsl(var(--muted-foreground) / 0.3)' }}
                           />
                           <Line 
                             type="monotone" 
                             dataKey="accuracy" 
-                            stroke="var(--accent)" 
+                            stroke={COLOR_THEMES[colorTheme].accent}
                             strokeWidth={2}
-                            dot={{ fill: 'var(--accent)', strokeWidth: 0, r: 4 }}
+                            dot={{ fill: COLOR_THEMES[colorTheme].accent, strokeWidth: 0, r: 4 }}
+                            activeDot={{ r: 6, fill: COLOR_THEMES[colorTheme].primary }}
                           />
                         </LineChart>
                       </ResponsiveContainer>
@@ -1588,9 +1616,10 @@ export default function IsItPink() {
                     setGameState('menu');
                   }}
                   className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
+whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.06 }}
+                    >
                   Back to Menu
                 </motion.button>
               </motion.div>
@@ -1603,7 +1632,7 @@ export default function IsItPink() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.1 }}
               >
                 {/* Daily Progress */}
                 {isDailyMode && (
@@ -1658,9 +1687,9 @@ export default function IsItPink() {
                     backgroundColor: currentColor,
                     boxShadow: `0 25px 80px ${currentColor}50, 0 0 0 4px ${currentColor}20`,
                   }}
-                  initial={{ scale: 0.9, opacity: 0 }}
+                  initial={{ scale: 0.95, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 >
                   <AnimatePresence mode="wait">
                     <motion.div
@@ -1704,9 +1733,10 @@ export default function IsItPink() {
                   <motion.button
                     onClick={(e) => handleGuess('pink', e)}
                     disabled={isTransitioning}
-                    className="py-4 sm:py-5 rounded-2xl bg-primary text-primary-foreground font-bold text-base sm:text-lg shadow-lg shadow-primary/30 disabled:opacity-50 relative overflow-hidden group"
+className="py-4 sm:py-5 rounded-2xl bg-primary text-primary-foreground font-bold text-base sm:text-lg shadow-lg shadow-primary/30 disabled:opacity-50 relative overflow-hidden group"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.06 }}
                   >
                     <span className="relative z-10">Pink (A)</span>
                     <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform" />
@@ -1715,8 +1745,9 @@ export default function IsItPink() {
                     onClick={(e) => handleGuess('notpink', e)}
                     disabled={isTransitioning}
                     className="py-4 sm:py-5 rounded-2xl bg-accent text-accent-foreground font-bold text-base sm:text-lg shadow-lg shadow-accent/30 disabled:opacity-50 relative overflow-hidden group"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.06 }}
                   >
                     <span className="relative z-10">Not Pink (D)</span>
                     <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform" />
@@ -1738,12 +1769,12 @@ export default function IsItPink() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4 }}
+                transition={{ duration: 0.12 }}
               >
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
                   <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                     {score >= highScore && score > 0 ? (
@@ -1764,7 +1795,7 @@ export default function IsItPink() {
                   className="bg-card p-4 sm:p-5 rounded-2xl border border-border space-y-1"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
+                  transition={{ duration: 0.1 }}
                 >
                   {[
                     { label: 'Final Score', value: score, highlight: true },
@@ -1785,7 +1816,7 @@ export default function IsItPink() {
                   className="space-y-3"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
+                  transition={{ duration: 0.1 }}
                 >
                   <motion.button
                     onClick={() => {
@@ -1793,8 +1824,9 @@ export default function IsItPink() {
                       startGame(isDailyMode ? false : undefined);
                     }}
                     className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-accent text-primary-foreground font-bold text-lg shadow-xl shadow-primary/30 flex items-center justify-center gap-2"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.06 }}
                   >
                     <RotateCcw className="w-5 h-5" /> {isDailyMode ? 'Play Classic' : 'Play Again'}
                   </motion.button>
@@ -1805,9 +1837,10 @@ export default function IsItPink() {
                         setGameState('menu');
                       }}
                       className="py-3 rounded-xl border border-border hover:bg-muted transition-colors font-semibold"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
+whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.06 }}
+                  >
                       Menu
                     </motion.button>
                     <motion.button
@@ -1816,9 +1849,10 @@ export default function IsItPink() {
                         setShowShareModal(true);
                       }}
                       className="py-3 rounded-xl border border-border hover:bg-muted transition-colors font-semibold flex items-center justify-center gap-2"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
+whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.06 }}
+                  >
                       <Share2 className="w-4 h-4" /> Share
                     </motion.button>
                   </div>
@@ -1830,9 +1864,8 @@ export default function IsItPink() {
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-border hover:bg-muted transition-colors text-sm font-medium"
                   whileHover={{ scale: 1.02 }}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.06 }}
                 >
                   <Github className="w-4 h-4" />
                   Star on GitHub
@@ -1865,18 +1898,13 @@ export default function IsItPink() {
       <style jsx global>{`
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
-          10% { transform: translateX(-10px) rotate(-1deg); }
-          20% { transform: translateX(10px) rotate(1deg); }
-          30% { transform: translateX(-8px) rotate(-0.5deg); }
-          40% { transform: translateX(8px) rotate(0.5deg); }
-          50% { transform: translateX(-6px); }
-          60% { transform: translateX(6px); }
-          70% { transform: translateX(-4px); }
-          80% { transform: translateX(4px); }
-          90% { transform: translateX(-2px); }
+          20% { transform: translateX(-8px) rotate(-1deg); }
+          40% { transform: translateX(8px) rotate(1deg); }
+          60% { transform: translateX(-5px); }
+          80% { transform: translateX(5px); }
         }
         .animate-shake {
-          animation: shake 0.4s ease-in-out;
+          animation: shake 0.25s ease-in-out;
         }
       `}</style>
     </div>
