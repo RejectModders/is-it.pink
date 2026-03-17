@@ -1,0 +1,64 @@
+import { PINK_COLORS, NOT_PINK_COLORS } from './game-constants';
+
+// Helper function to convert hex to HSL
+export function hexToHSL(hex: string): { h: number; s: number; l: number } {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!result) return { h: 0, s: 0, l: 0 };
+  
+  let r = parseInt(result[1], 16) / 255;
+  let g = parseInt(result[2], 16) / 255;
+  let b = parseInt(result[3], 16) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+      case g: h = ((b - r) / d + 2) / 6; break;
+      case b: h = ((r - g) / d + 4) / 6; break;
+    }
+  }
+
+  return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+}
+
+// Helper to generate complementary colors for themes
+export function generateThemeColors(primary: string, accent: string, isDark: boolean) {
+  const hslPrimary = hexToHSL(primary);
+  const hslAccent = hexToHSL(accent);
+  
+  return {
+    primary: `hsl(${hslPrimary.h}, ${hslPrimary.s}%, ${isDark ? Math.min(hslPrimary.l + 15, 85) : hslPrimary.l}%)`,
+    primaryForeground: isDark ? '#1a0f16' : '#ffffff',
+    accent: `hsl(${hslAccent.h}, ${hslAccent.s}%, ${isDark ? Math.min(hslAccent.l + 10, 80) : hslAccent.l}%)`,
+    accentForeground: isDark ? '#1a0f16' : '#ffffff',
+    ring: primary,
+  };
+}
+
+// Seeded random for daily challenge
+export function seededRandom(seed: number) {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+export function getDailySequence(date: string): Array<{ color: { hex: string; name: string }; isPink: boolean }> {
+  const seed = date.split('-').reduce((acc, val) => acc + parseInt(val), 0) * 12345;
+  const sequence: Array<{ color: { hex: string; name: string }; isPink: boolean }> = [];
+  
+  for (let i = 0; i < 20; i++) {
+    const rand = seededRandom(seed + i * 1000);
+    const isPink = rand < 0.5;
+    const colorArray = isPink ? PINK_COLORS : NOT_PINK_COLORS;
+    const colorIndex = Math.floor(seededRandom(seed + i * 2000) * colorArray.length);
+    sequence.push({ color: colorArray[colorIndex], isPink });
+  }
+  
+  return sequence;
+}

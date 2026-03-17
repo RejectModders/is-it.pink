@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="pinkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ec4899"/>
+      <stop offset="100%" style="stop-color:#db2777"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#pinkGradient)"/>
+  
+  <!-- Inner shadow/depth -->
+  <circle cx="256" cy="256" r="200" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="4"/>
+  
+  <!-- Question mark -->
+  <g filter="url(#glow)">
+    <!-- Question mark curve -->
+    <path 
+      d="M256 120 
+         C320 120 360 160 360 220 
+         C360 280 300 300 256 320
+         L256 340"
+      fill="none" 
+      stroke="white" 
+      stroke-width="48" 
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <!-- Question mark dot -->
+    <circle cx="256" cy="400" r="28" fill="white"/>
+  </g>
+  
+  <!-- Sparkle accents -->
+  <g fill="white" opacity="0.9">
+    <!-- Top right sparkle -->
+    <path d="M420 100 L426 116 L442 122 L426 128 L420 144 L414 128 L398 122 L414 116 Z"/>
+    <!-- Bottom left sparkle -->
+    <path d="M92 380 L96 392 L108 396 L96 400 L92 412 L88 400 L76 396 L88 392 Z"/>
+    <!-- Small sparkle -->
+    <circle cx="380" cy="380" r="8"/>
+  </g>
+</svg>
