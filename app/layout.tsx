@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   openGraph: {
-    title: 'is it pink? - The Color Guessing Game',
+    title: 'is it pink?',
     description: 'Can you tell if a color is pink? Test your color perception in this addictive mini-game!',
     url: 'https://is-it.pink',
     siteName: 'is it pink?',
@@ -27,10 +27,10 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'is it pink? - The Color Guessing Game',
+        url: '/favicon.png',
+        width: 512,
+        height: 512,
+        alt: 'is it pink?',
       },
     ],
   },
@@ -38,10 +38,10 @@ export const metadata: Metadata = {
     'theme-color': '#ec4899',
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'is it pink? - The Color Guessing Game',
+    card: 'summary',
+    title: 'is it pink?',
     description: 'Can you tell if a color is pink? Test your color perception in this addictive mini-game!',
-    images: ['/og-image.png'],
+    images: ['/favicon.png'],
   },
   icons: {
     icon: [
