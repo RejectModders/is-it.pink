@@ -51,9 +51,10 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate 
            today.getFullYear() === currentMonth.getFullYear();
   };
   
-  const isFuture = (day: number) => {
+  const isPast = (day: number) => {
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-    return date > today;
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    return date < todayStart;
   };
 
   return (
@@ -123,20 +124,20 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate 
             const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
             const challenge = getChallengeForDate(date);
             const isCurrentDay = isToday(day);
-            const isFutureDay = isFuture(day);
+            const isPastDay = isPast(day);
             
             return (
               <motion.button
                 key={day}
                 onClick={() => {
-                  if (!isFutureDay) {
+                  if (!isPastDay) {
                     playSound('click');
                     setSelectedChallenge(challenge);
                   }
                 }}
-                disabled={isFutureDay}
+                disabled={isPastDay}
                 className={`aspect-square rounded-lg text-sm font-medium transition-all flex flex-col items-center justify-center gap-0.5 ${
-                  isFutureDay 
+                  isPastDay 
                     ? 'opacity-30 cursor-not-allowed' 
                     : selectedChallenge?.id === challenge.id
                       ? 'bg-primary text-primary-foreground'
@@ -144,14 +145,14 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate 
                         ? 'bg-primary/20 border-2 border-primary'
                         : 'hover:bg-muted'
                 }`}
-                whileHover={!isFutureDay ? { scale: 1.05 } : {}}
-                whileTap={!isFutureDay ? { scale: 0.95 } : {}}
+                whileHover={!isPastDay ? { scale: 1.05 } : {}}
+                whileTap={!isPastDay ? { scale: 0.95 } : {}}
               >
                 <span>{day}</span>
                 <div className={`w-1.5 h-1.5 rounded-full ${
                   challenge.difficulty === 'easy' ? 'bg-green-500' :
                   challenge.difficulty === 'medium' ? 'bg-yellow-500' : 'bg-red-500'
-                } ${isFutureDay ? 'opacity-30' : ''}`} />
+                } ${isPastDay ? 'opacity-30' : ''}`} />
               </motion.button>
             );
           })}
