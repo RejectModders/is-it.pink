@@ -205,9 +205,14 @@ export interface Stats {
   dailiesCompleted: number;
   unlockedAchievements: string[];
   lastDailyDate?: string;
+  lastDailyResult?: 'completed' | 'failed';
   dailyBestScore?: number;
   gameHistory: Array<{ date: string; score: number; accuracy: number; streak: number }>;
+  completedDailies?: string[]; // Array of date strings for completed dailies
 }
+
+// Launch date for daily challenges - everything before this is disabled
+export const DAILY_LAUNCH_DATE = new Date(2026, 2, 17); // March 17, 2026
 
 export interface GameStats {
   totalGuesses: number;

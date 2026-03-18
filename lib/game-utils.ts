@@ -53,6 +53,14 @@ export function generateThemeColors(primary: string, accent: string, isDark: boo
   };
 }
 
+// Get local date string in YYYY-MM-DD format (user's timezone)
+export function getLocalDateString(date: Date = new Date()): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 // Seeded random for daily challenge
 export function seededRandom(seed: number) {
   const x = Math.sin(seed) * 10000;
@@ -119,9 +127,12 @@ export function getChallengeSequence(challenge: DailyChallenge, seedOffset = 0):
   return sequence;
 }
 
-// Get challenge for a specific date (for calendar)
+// Get challenge for a specific date (for calendar) - uses local date
 export function getChallengeForDate(date: Date): DailyChallenge {
-  const daysSinceEpoch = Math.floor(date.getTime() / (1000 * 60 * 60 * 24));
+  // Use local date components to avoid timezone issues
+  const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const epoch = new Date(1970, 0, 1);
+  const daysSinceEpoch = Math.floor((localDate.getTime() - epoch.getTime()) / (1000 * 60 * 60 * 24));
   const challengeIndex = daysSinceEpoch % DAILY_CHALLENGES.length;
   return DAILY_CHALLENGES[challengeIndex];
 }

@@ -47,6 +47,7 @@ export function GameHeader({
             alt="is it pink?" 
             width={36} 
             height={36}
+            loading="eager"
             className="w-8 h-8 sm:w-9 sm:h-9"
           />
         <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">is it pink?</h1>

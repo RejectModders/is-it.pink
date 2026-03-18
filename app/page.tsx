@@ -21,7 +21,7 @@ import {
   type ColorTheme,
   type GameStats,
 } from '@/lib/game-constants';
-import { generateThemeColors, getDailySequence, getDailyChallenge, getChallengeSequence, getChallengeForDate } from '@/lib/game-utils';
+import { generateThemeColors, getDailySequence, getDailyChallenge, getChallengeSequence, getChallengeForDate, getLocalDateString } from '@/lib/game-utils';
 import { type DailyChallenge, DAILY_CHALLENGES } from '@/lib/game-constants';
 
 import {
@@ -128,15 +128,16 @@ export default function IsItPink() {
     const savedTutorial = localStorage.getItem('pinkGameTutorialSeen');
     
     if (saved) setHighScore(parseInt(saved));
-    if (savedStats) {
-      const parsed = JSON.parse(savedStats);
-      setStats({
-        ...parsed,
-        dailiesCompleted: parsed.dailiesCompleted || 0,
-        unlockedAchievements: parsed.unlockedAchievements || [],
-        gameHistory: parsed.gameHistory || [],
-      });
-    }
+if (savedStats) {
+  const parsed = JSON.parse(savedStats);
+  setStats({
+  ...parsed,
+  dailiesCompleted: parsed.dailiesCompleted || 0,
+  unlockedAchievements: parsed.unlockedAchievements || [],
+  gameHistory: parsed.gameHistory || [],
+  completedDailies: parsed.completedDailies || [],
+  });
+  }
     if (savedDarkMode) setDarkMode(JSON.parse(savedDarkMode));
     if (savedSound) setSoundEnabled(JSON.parse(savedSound));
     if (savedColorBlind) setColorBlindMode(JSON.parse(savedColorBlind));
@@ -156,7 +157,7 @@ export default function IsItPink() {
       setDarkMode(true);
     }
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
     setTodayDate(today);
     setDailySequence(getDailySequence(today));
     setDailyChallenge(getDailyChallenge(today));
@@ -307,7 +308,7 @@ export default function IsItPink() {
     }
   }, [hapticEnabled]);
 
-  const saveStats = useCallback(() => {
+  const saveStats = useCallback((dailyResult?: 'completed' | 'failed') => {
     // Skip saving stats in preview mode
     if (isPreviewMode) return;
     
@@ -319,17 +320,25 @@ export default function IsItPink() {
       streak: maxStreak,
     };
 
+    // Track completed dailies history
+    const existingCompletedDailies = stats.completedDailies || [];
+    const shouldAddToCompleted = isDailyMode && dailyResult === 'completed' && !existingCompletedDailies.includes(todayDate);
+    
     const newStats: Stats = {
       totalGames: stats.totalGames + 1,
       bestScore: Math.max(stats.bestScore, score),
       totalCorrect: stats.totalCorrect + correctGuesses,
       totalGuesses: stats.totalGuesses + totalGuesses,
       longestStreak: Math.max(stats.longestStreak, maxStreak),
-      dailiesCompleted: stats.dailiesCompleted + (isDailyMode && !dailyCompleted ? 1 : 0),
+      dailiesCompleted: stats.dailiesCompleted + (isDailyMode && !dailyCompleted && dailyResult === 'completed' ? 1 : 0),
       unlockedAchievements: stats.unlockedAchievements,
       lastDailyDate: isDailyMode ? todayDate : stats.lastDailyDate,
+      lastDailyResult: isDailyMode ? dailyResult : stats.lastDailyResult,
       dailyBestScore: isDailyMode ? Math.max(stats.dailyBestScore || 0, score) : stats.dailyBestScore,
       gameHistory: [...(stats.gameHistory || []).slice(-29), newGameEntry],
+      completedDailies: shouldAddToCompleted 
+        ? [...existingCompletedDailies, todayDate] 
+        : existingCompletedDailies,
     };
     
     if (isDailyMode && !dailyCompleted) {
@@ -636,9 +645,9 @@ const createParticles = (isCorrect: boolean, color: string, clientX?: number, cl
       if (!timedMode || isDailyMode) {
         setLives(prev => {
           const newLives = prev - 1;
-          if (newLives <= 0 || (isDailyMode && dailyIndex >= dailySequence.length - 1)) {
+          if (newLives <= 0) {
             setGameState('gameover');
-            saveStats();
+            saveStats(isDailyMode ? 'failed' : undefined);
           }
           return newLives;
         });
@@ -655,7 +664,7 @@ const createParticles = (isCorrect: boolean, color: string, clientX?: number, cl
     if (isDailyMode && dailyIndex >= dailySequence.length - 1) {
       setTimeout(() => {
         setGameState('gameover');
-        saveStats();
+        saveStats('completed');
       }, 400);
       return;
     }
@@ -803,6 +812,7 @@ const accuracy = totalGuesses > 0 ? Math.round((correctGuesses / totalGuesses) *
                 timedMode={timedMode}
                 setTimedMode={setTimedMode}
                 hasDoneDaily={hasDoneDaily}
+                dailyResult={stats.lastDailyResult}
                 startGame={startGame}
                 setGameState={setGameState}
                 playSound={playSound}
@@ -846,12 +856,13 @@ const accuracy = totalGuesses > 0 ? Math.round((correctGuesses / totalGuesses) *
             )}
 
             {gameState === 'calendar' && (
-              <CalendarView
-                setGameState={setGameState}
-                startPreview={startPreview}
-                playSound={playSound}
-                todayDate={todayDate}
-              />
+<CalendarView
+  setGameState={setGameState}
+  startPreview={startPreview}
+  playSound={playSound}
+  todayDate={todayDate}
+  stats={stats}
+  />
             )}
 
             {gameState === 'playing' && (
