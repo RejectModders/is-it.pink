@@ -258,8 +258,8 @@ export function PlayingView({
           </motion.div>
         </AnimatePresence>
         
-        {/* Color Blind Mode Info - disabled in daily mode */}
-        {colorBlindMode && !isDailyMode && (
+        {/* Color Blind Mode Info - always shown when enabled (accessibility) */}
+        {colorBlindMode && (
           <motion.div 
             className="mt-3 text-white/90 text-sm font-semibold drop-shadow-md bg-black/30 px-4 py-2 rounded-full"
             initial={{ opacity: 0 }}
