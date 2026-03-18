@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 
 import {
@@ -21,7 +22,7 @@ import {
   type ColorTheme,
   type GameStats,
 } from '@/lib/game-constants';
-import { generateThemeColors, getDailySequence, getDailyChallenge, getChallengeSequence, getChallengeForDate, getLocalDateString } from '@/lib/game-utils';
+import { generateThemeColors, getDailySequence, getDailyChallenge, getChallengeSequence, getChallengeForDate, getLocalDateString, validateStats, calculateDailyStreak } from '@/lib/game-utils';
 import { type DailyChallenge, DAILY_CHALLENGES } from '@/lib/game-constants';
 
 import {
@@ -40,10 +41,42 @@ import {
   HelpView,
   CalendarView,
   TutorialOverlay,
+  ErrorBoundary,
 } from '@/components/game';
 
-export default function IsItPink() {
-  const [gameState, setGameState] = useState<GameState>('menu');
+// URL-navigable views (secondary screens)
+const URL_VIEWS = ['stats', 'achievements', 'settings', 'help', 'calendar'] as const;
+type UrlView = typeof URL_VIEWS[number];
+
+function isUrlView(view: string): view is UrlView {
+  return URL_VIEWS.includes(view as UrlView);
+}
+
+function IsItPinkGame() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  // Internal game state (playing, gameover, menu)
+  const [internalGameState, setInternalGameState] = useState<'menu' | 'playing' | 'gameover'>('menu');
+  
+  // Derive full gameState from URL params + internal state
+  const urlView = searchParams.get('view');
+  const gameState: GameState = urlView && isUrlView(urlView) ? urlView : internalGameState;
+  
+  // Navigation function that handles both URL and state changes
+  const setGameState = useCallback((newState: GameState) => {
+    if (isUrlView(newState)) {
+      // URL-based navigation for secondary views
+      router.push(`/?view=${newState}`, { scroll: false });
+    } else {
+      // State-based navigation for game flow (menu, playing, gameover)
+      // Only push to router if we're currently on a URL view
+      if (urlView) {
+        router.push('/', { scroll: false });
+      }
+      setInternalGameState(newState);
+    }
+  }, [router, urlView]);
   const [currentColor, setCurrentColor] = useState('#ec4899');
   const [currentColorName, setCurrentColorName] = useState('Hot Pink');
   const [score, setScore] = useState(0);
@@ -129,15 +162,23 @@ export default function IsItPink() {
     
     if (saved) setHighScore(parseInt(saved));
 if (savedStats) {
-  const parsed = JSON.parse(savedStats);
-  setStats({
-  ...parsed,
-  dailiesCompleted: parsed.dailiesCompleted || 0,
-  unlockedAchievements: parsed.unlockedAchievements || [],
-  gameHistory: parsed.gameHistory || [],
-  completedDailies: parsed.completedDailies || [],
-  });
+  try {
+    const parsed = JSON.parse(savedStats);
+    if (validateStats(parsed)) {
+      setStats({
+        ...parsed,
+        dailiesCompleted: parsed.dailiesCompleted || 0,
+        unlockedAchievements: parsed.unlockedAchievements || [],
+        gameHistory: parsed.gameHistory || [],
+        completedDailies: parsed.completedDailies || [],
+      });
+    } else {
+      console.warn('[v0] Invalid stats data, using defaults');
+    }
+  } catch (e) {
+    console.error('[v0] Failed to parse stats:', e);
   }
+}
     if (savedDarkMode) setDarkMode(JSON.parse(savedDarkMode));
     if (savedSound) setSoundEnabled(JSON.parse(savedSound));
     if (savedColorBlind) setColorBlindMode(JSON.parse(savedColorBlind));
@@ -172,6 +213,31 @@ if (savedStats) {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  // Persist sound settings
+  useEffect(() => {
+    localStorage.setItem('pinkGameSound', JSON.stringify(soundEnabled));
+  }, [soundEnabled]);
+
+  // Persist haptic settings
+  useEffect(() => {
+    localStorage.setItem('pinkGameHaptic', JSON.stringify(hapticEnabled));
+  }, [hapticEnabled]);
+
+  // Persist color blind mode
+  useEffect(() => {
+    localStorage.setItem('pinkGameColorBlind', JSON.stringify(colorBlindMode));
+  }, [colorBlindMode]);
+
+  // Persist sound pack
+  useEffect(() => {
+    localStorage.setItem('pinkGameSoundPack', soundPack);
+  }, [soundPack]);
+
+  // Persist color theme
+  useEffect(() => {
+    localStorage.setItem('pinkGameTheme', colorTheme);
+  }, [colorTheme]);
 
   // Timer for timed mode
   useEffect(() => {
@@ -754,8 +820,9 @@ const accuracy = totalGuesses > 0 ? Math.round((correctGuesses / totalGuesses) *
   };
   
   return (
-    <div className={`min-h-screen min-h-[100dvh] transition-colors duration-100 ${shakeScreen ? 'animate-shake' : ''}`}>
-      <div className="min-h-screen min-h-[100dvh] bg-background text-foreground flex flex-col relative overflow-hidden">
+    <ErrorBoundary>
+      <div className={`min-h-screen min-h-[100dvh] transition-colors duration-100 ${shakeScreen ? 'animate-shake' : ''}`}>
+        <div className="min-h-screen min-h-[100dvh] bg-background text-foreground flex flex-col relative overflow-hidden">
         {/* Background Pattern */}
         <div className="fixed inset-0 opacity-[0.02] dark:opacity-[0.03] pointer-events-none">
           <div className="absolute inset-0" style={{
@@ -906,8 +973,22 @@ const accuracy = totalGuesses > 0 ? Math.round((correctGuesses / totalGuesses) *
           </AnimatePresence>
         </main>
 
-        <GameFooter />
+          <GameFooter />
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
+  );
+}
+
+// Wrap with Suspense for useSearchParams
+export default function IsItPink() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen min-h-[100dvh] bg-background flex items-center justify-center">
+        <div className="text-primary text-xl font-semibold animate-pulse">Loading...</div>
+      </div>
+    }>
+      <IsItPinkGame />
+    </Suspense>
   );
 }

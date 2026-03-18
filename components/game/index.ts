@@ -4,6 +4,7 @@ export { ShareModal } from './ShareModal';
 export { AchievementPopup } from './AchievementPopup';
 export { Particles } from './Particles';
 export { Confetti } from './Confetti';
+export { ErrorBoundary } from './ErrorBoundary';
 
 // Views
 export { MenuView } from './views/MenuView';

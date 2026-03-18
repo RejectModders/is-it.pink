@@ -136,3 +136,75 @@ export function getChallengeForDate(date: Date): DailyChallenge {
   const challengeIndex = daysSinceEpoch % DAILY_CHALLENGES.length;
   return DAILY_CHALLENGES[challengeIndex];
 }
+
+// Calculate daily streak from completed dailies array
+export function calculateDailyStreak(completedDailies: string[]): { currentStreak: number; longestStreak: number } {
+  if (!completedDailies || completedDailies.length === 0) {
+    return { currentStreak: 0, longestStreak: 0 };
+  }
+
+  // Sort dates in descending order
+  const sortedDates = [...completedDailies].sort((a, b) => b.localeCompare(a));
+  const today = getLocalDateString();
+  const yesterday = getLocalDateString(new Date(Date.now() - 86400000));
+
+  let currentStreak = 0;
+  let longestStreak = 0;
+  let tempStreak = 0;
+  let lastDate: string | null = null;
+
+  // Calculate longest streak
+  const ascendingDates = [...completedDailies].sort((a, b) => a.localeCompare(b));
+  for (const dateStr of ascendingDates) {
+    if (lastDate === null) {
+      tempStreak = 1;
+    } else {
+      const lastDateObj = new Date(lastDate + 'T00:00:00');
+      const currentDateObj = new Date(dateStr + 'T00:00:00');
+      const diffDays = Math.round((currentDateObj.getTime() - lastDateObj.getTime()) / 86400000);
+      
+      if (diffDays === 1) {
+        tempStreak++;
+      } else if (diffDays > 1) {
+        tempStreak = 1;
+      }
+    }
+    longestStreak = Math.max(longestStreak, tempStreak);
+    lastDate = dateStr;
+  }
+
+  // Calculate current streak (must include today or yesterday)
+  const firstDate = sortedDates[0];
+  if (firstDate === today || firstDate === yesterday) {
+    currentStreak = 1;
+    let checkDate = new Date(firstDate + 'T00:00:00');
+    
+    for (let i = 1; i < sortedDates.length; i++) {
+      checkDate = new Date(checkDate.getTime() - 86400000);
+      const expectedDate = getLocalDateString(checkDate);
+      
+      if (sortedDates[i] === expectedDate) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+  }
+
+  return { currentStreak, longestStreak };
+}
+
+// Validate and sanitize localStorage data
+export function validateStats(data: unknown): boolean {
+  if (!data || typeof data !== 'object') return false;
+  const stats = data as Record<string, unknown>;
+  
+  return (
+    typeof stats.totalGames === 'number' &&
+    typeof stats.bestScore === 'number' &&
+    typeof stats.totalCorrect === 'number' &&
+    typeof stats.totalGuesses === 'number' &&
+    typeof stats.longestStreak === 'number' &&
+    Array.isArray(stats.unlockedAchievements)
+  );
+}

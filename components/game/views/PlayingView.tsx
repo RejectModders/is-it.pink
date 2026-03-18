@@ -301,6 +301,11 @@ export function PlayingView({
         <span className="flex items-center gap-1"><Target className="w-3 h-3" /> {accuracy}% accuracy</span>
         <span className="flex items-center gap-1"><Crown className="w-3 h-3" /> Best: {highScore}</span>
       </div>
+
+      {/* Keyboard shortcuts hint - hidden on mobile */}
+      <div className="hidden sm:block text-center text-[10px] text-muted-foreground/50 mt-2">
+        Press <kbd className="px-1.5 py-0.5 bg-muted rounded text-muted-foreground font-mono">A</kbd> for Pink or <kbd className="px-1.5 py-0.5 bg-muted rounded text-muted-foreground font-mono">D</kbd> for Not Pink
+      </div>
     </motion.div>
   );
 }

@@ -1,10 +1,11 @@
 'use client';
 
-import { BarChart3, TrendingUp, Crown, Flame, Target, Award, Calendar } from 'lucide-react';
+import { BarChart3, TrendingUp, Crown, Flame, Target, Award, Calendar, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, Tooltip } from 'recharts';
 import type { Stats, GameState, ColorTheme } from '@/lib/game-constants';
 import { COLOR_THEMES } from '@/lib/game-constants';
+import { calculateDailyStreak } from '@/lib/game-utils';
 
 interface StatsViewProps {
   stats: Stats;
@@ -25,6 +26,8 @@ export function StatsView({
     accuracy: game.accuracy,
     streak: game.streak,
   }));
+
+  const { currentStreak, longestStreak: longestDailyStreak } = calculateDailyStreak(stats.completedDailies || []);
 
   return (
     <motion.div 
@@ -48,10 +51,12 @@ export function StatsView({
           { label: 'Total Correct', value: stats.totalCorrect, icon: Target },
           { label: 'Overall Accuracy', value: `${stats.totalGuesses > 0 ? Math.round((stats.totalCorrect / stats.totalGuesses) * 100) : 0}%`, icon: Award },
           { label: 'Dailies Completed', value: stats.dailiesCompleted, icon: Calendar },
+          { label: 'Daily Streak', value: currentStreak > 0 ? `${currentStreak} day${currentStreak !== 1 ? 's' : ''}` : '0', icon: Zap, highlight: currentStreak >= 3 },
+          { label: 'Best Daily Streak', value: longestDailyStreak > 0 ? `${longestDailyStreak} day${longestDailyStreak !== 1 ? 's' : ''}` : '0', icon: Zap },
         ].map((item, i) => (
           <motion.div 
             key={item.label}
-            className={`flex justify-between items-center py-3 ${i < 5 ? 'border-b border-border' : ''}`}
+            className={`flex justify-between items-center py-3 ${i < 7 ? 'border-b border-border' : ''}`}
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.08 }}
