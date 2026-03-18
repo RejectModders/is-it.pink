@@ -3,6 +3,7 @@
 import { Github, Moon, Sun, Volume2, VolumeX, Eye, Vibrate } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface GameHeaderProps {
   darkMode: boolean;
@@ -29,6 +30,13 @@ export function GameHeader({
   playSound,
   triggerHaptic,
 }: GameHeaderProps) {
+  const router = useRouter();
+  
+  const goHome = () => {
+    playSound('click');
+    router.push('/');
+  };
+  
   return (
     <motion.header 
       className="flex items-center justify-between p-3 sm:p-4 border-b border-border bg-card/80 backdrop-blur-xl sticky top-0 z-40"
@@ -38,6 +46,7 @@ export function GameHeader({
     >
       <motion.div 
         className="flex items-center gap-2 cursor-pointer"
+        onClick={goHome}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         transition={{ duration: 0.06 }}

@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 
 import {
@@ -43,8 +44,39 @@ import {
   ErrorBoundary,
 } from '@/components/game';
 
-export default function IsItPink() {
-  const [gameState, setGameState] = useState<GameState>('menu');
+// URL-navigable views (secondary screens)
+const URL_VIEWS = ['stats', 'achievements', 'settings', 'help', 'calendar'] as const;
+type UrlView = typeof URL_VIEWS[number];
+
+function isUrlView(view: string): view is UrlView {
+  return URL_VIEWS.includes(view as UrlView);
+}
+
+function IsItPinkGame() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  // Internal game state (playing, gameover, menu)
+  const [internalGameState, setInternalGameState] = useState<'menu' | 'playing' | 'gameover'>('menu');
+  
+  // Derive full gameState from URL params + internal state
+  const urlView = searchParams.get('view');
+  const gameState: GameState = urlView && isUrlView(urlView) ? urlView : internalGameState;
+  
+  // Navigation function that handles both URL and state changes
+  const setGameState = useCallback((newState: GameState) => {
+    if (isUrlView(newState)) {
+      // URL-based navigation for secondary views
+      router.push(`/?view=${newState}`, { scroll: false });
+    } else {
+      // State-based navigation for game flow (menu, playing, gameover)
+      // Only push to router if we're currently on a URL view
+      if (urlView) {
+        router.push('/', { scroll: false });
+      }
+      setInternalGameState(newState);
+    }
+  }, [router, urlView]);
   const [currentColor, setCurrentColor] = useState('#ec4899');
   const [currentColorName, setCurrentColorName] = useState('Hot Pink');
   const [score, setScore] = useState(0);
@@ -945,5 +977,18 @@ const accuracy = totalGuesses > 0 ? Math.round((correctGuesses / totalGuesses) *
         </div>
       </div>
     </ErrorBoundary>
+  );
+}
+
+// Wrap with Suspense for useSearchParams
+export default function IsItPink() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen min-h-[100dvh] bg-background flex items-center justify-center">
+        <div className="text-primary text-xl font-semibold animate-pulse">Loading...</div>
+      </div>
+    }>
+      <IsItPinkGame />
+    </Suspense>
   );
 }
