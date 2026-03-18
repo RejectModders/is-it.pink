@@ -20,7 +20,6 @@ interface PlayingViewProps {
   dailyIndex: number;
   dailySequenceLength: number;
   colorBlindMode: boolean;
-  showColorName: boolean;
   pulseCorrect: boolean;
   isTransitioning: boolean;
   colorBoxRef: React.RefObject<HTMLDivElement>;
@@ -62,7 +61,6 @@ export function PlayingView({
   dailyIndex,
   dailySequenceLength,
   colorBlindMode,
-  showColorName,
   pulseCorrect,
   isTransitioning,
   colorBoxRef,
@@ -269,19 +267,7 @@ export function PlayingView({
           </motion.div>
         )}
         
-        {/* Show color name after guess - disabled in daily mode */}
-        <AnimatePresence>
-          {showColorName && !colorBlindMode && !isDailyMode && (
-            <motion.div 
-              className="mt-2 text-white/90 text-sm sm:text-base font-semibold drop-shadow-md bg-black/20 px-3 py-1 rounded-full"
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-            >
-              {currentColorName}
-            </motion.div>
-          )}
-        </AnimatePresence>
+
       </motion.div>
 
       {/* Buttons */}

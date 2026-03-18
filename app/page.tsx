@@ -70,7 +70,7 @@ export default function IsItPink() {
   });
   const [difficulty, setDifficulty] = useState<'easy' | 'normal' | 'hard' | 'extreme'>('normal');
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [showColorName, setShowColorName] = useState(false);
+
   const [timeLeft, setTimeLeft] = useState(0);
   const [timedMode, setTimedMode] = useState(false);
   const [shakeScreen, setShakeScreen] = useState(false);
@@ -365,7 +365,6 @@ if (savedStats) {
         setCurrentColor(current.color.hex);
         setCurrentColorName(current.color.name);
         setIsPink(current.isPink);
-        setShowColorName(false);
         setColorKey(prev => prev + 1);
       }
       return;
@@ -396,7 +395,6 @@ if (savedStats) {
     setCurrentColor(selected.hex);
     setCurrentColorName(selected.name);
     setIsPink(isPinkColor);
-    setShowColorName(false);
     setColorKey(prev => prev + 1);
   }, [difficulty, isDailyMode, dailyIndex, dailySequence]);
 
@@ -617,7 +615,6 @@ const createParticles = (isCorrect: boolean, color: string, clientX?: number, cl
     const msgPool = isCorrect ? MOTIVATIONAL_MESSAGES.correct : MOTIVATIONAL_MESSAGES.wrong;
     const msg = msgPool[Math.floor(Math.random() * msgPool.length)];
     setMessage(msg);
-    setShowColorName(true);
     setIsTransitioning(true);
 
     setTotalGuesses(prev => prev + 1);
@@ -883,7 +880,6 @@ const accuracy = totalGuesses > 0 ? Math.round((correctGuesses / totalGuesses) *
                 dailyIndex={dailyIndex}
                 dailySequenceLength={dailySequence.length}
                 colorBlindMode={colorBlindMode}
-                showColorName={showColorName}
                 pulseCorrect={pulseCorrect}
                 isTransitioning={isTransitioning}
                 colorBoxRef={colorBoxRef}
