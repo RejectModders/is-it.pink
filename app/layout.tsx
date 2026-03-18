@@ -65,10 +65,13 @@ export const viewport = {
   ],
 }
 
-// Script to prevent flash of wrong theme
+// Script to prevent flash of wrong theme - runs before paint
 const themeScript = `
   (function() {
     try {
+      document.documentElement.style.backgroundColor = '#1a0f16';
+      document.body.style.backgroundColor = '#1a0f16';
+      document.body.style.opacity = '1';
       var darkMode = localStorage.getItem('pinkGameDarkMode');
       if (darkMode === 'true' || (!darkMode && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
@@ -83,11 +86,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark" style={{ backgroundColor: '#1a0f16' }}>
+    <html lang="en" className="dark" style={{ backgroundColor: '#1a0f16' }} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <style dangerouslySetInnerHTML={{ __html: `html, body { background-color: #1a0f16 !important; }` }} />
       </head>
-      <body className="font-sans antialiased bg-background text-foreground">
+      <body className="font-sans antialiased bg-background text-foreground" style={{ backgroundColor: '#1a0f16' }}>
         {children}
         <Analytics />
         <ServiceWorkerRegistration />

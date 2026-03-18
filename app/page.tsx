@@ -128,15 +128,16 @@ export default function IsItPink() {
     const savedTutorial = localStorage.getItem('pinkGameTutorialSeen');
     
     if (saved) setHighScore(parseInt(saved));
-    if (savedStats) {
-      const parsed = JSON.parse(savedStats);
-      setStats({
-        ...parsed,
-        dailiesCompleted: parsed.dailiesCompleted || 0,
-        unlockedAchievements: parsed.unlockedAchievements || [],
-        gameHistory: parsed.gameHistory || [],
-      });
-    }
+if (savedStats) {
+  const parsed = JSON.parse(savedStats);
+  setStats({
+  ...parsed,
+  dailiesCompleted: parsed.dailiesCompleted || 0,
+  unlockedAchievements: parsed.unlockedAchievements || [],
+  gameHistory: parsed.gameHistory || [],
+  completedDailies: parsed.completedDailies || [],
+  });
+  }
     if (savedDarkMode) setDarkMode(JSON.parse(savedDarkMode));
     if (savedSound) setSoundEnabled(JSON.parse(savedSound));
     if (savedColorBlind) setColorBlindMode(JSON.parse(savedColorBlind));
@@ -319,6 +320,10 @@ export default function IsItPink() {
       streak: maxStreak,
     };
 
+    // Track completed dailies history
+    const existingCompletedDailies = stats.completedDailies || [];
+    const shouldAddToCompleted = isDailyMode && dailyResult === 'completed' && !existingCompletedDailies.includes(todayDate);
+    
     const newStats: Stats = {
       totalGames: stats.totalGames + 1,
       bestScore: Math.max(stats.bestScore, score),
@@ -331,6 +336,9 @@ export default function IsItPink() {
       lastDailyResult: isDailyMode ? dailyResult : stats.lastDailyResult,
       dailyBestScore: isDailyMode ? Math.max(stats.dailyBestScore || 0, score) : stats.dailyBestScore,
       gameHistory: [...(stats.gameHistory || []).slice(-29), newGameEntry],
+      completedDailies: shouldAddToCompleted 
+        ? [...existingCompletedDailies, todayDate] 
+        : existingCompletedDailies,
     };
     
     if (isDailyMode && !dailyCompleted) {

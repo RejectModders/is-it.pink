@@ -28,15 +28,18 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate,
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   
   const prevMonth = () => {
+    if (!canGoPrevMonth()) return;
     playSound('click');
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
     setSelectedChallenge(null);
+    setSelectedDay(null);
   };
   
   const nextMonth = () => {
     playSound('click');
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
     setSelectedChallenge(null);
+    setSelectedDay(null);
   };
   
   const getDifficultyColor = (difficulty: 'easy' | 'medium' | 'hard') => {
@@ -73,6 +76,18 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate,
     const dateStr = getDateString(day);
     return stats.lastDailyDate === dateStr;
   };
+  
+  const isDailyCompleted = (day: number) => {
+    const dateStr = getDateString(day);
+    return stats.completedDailies?.includes(dateStr) ?? false;
+  };
+  
+  // Check if we can go to previous month (not before launch month)
+  const canGoPrevMonth = () => {
+    const prevMonthDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
+    const launchMonth = new Date(DAILY_LAUNCH_DATE.getFullYear(), DAILY_LAUNCH_DATE.getMonth(), 1);
+    return prevMonthDate >= launchMonth;
+  };
 
   return (
     <motion.div 
@@ -102,7 +117,8 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate,
       <div className="flex items-center justify-between px-2">
         <button 
           onClick={prevMonth}
-          className="p-2 rounded-lg hover:bg-muted transition-colors"
+          disabled={!canGoPrevMonth()}
+          className={`p-2 rounded-lg transition-colors ${canGoPrevMonth() ? 'hover:bg-muted' : 'opacity-30 cursor-not-allowed'}`}
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -144,6 +160,7 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate,
             const isDisabled = isBeforeLaunch(day);
             const isPast = !isCurrentDay && isPastDay(day);
             const isDone = isDailyDone(day);
+            const isCompleted = isDailyCompleted(day);
             const isSelected = selectedChallenge?.id === challenge.id && 
               getDateString(day) === (selectedDay ?? '');
             
@@ -162,7 +179,7 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate,
                   isDisabled
                     ? 'opacity-25 cursor-not-allowed'
                     : isPast
-                      ? 'opacity-50 hover:opacity-70 hover:bg-muted'
+                      ? 'opacity-60 hover:opacity-80 hover:bg-muted'
                       : isSelected
                         ? 'bg-primary text-primary-foreground'
                         : isCurrentDay
@@ -173,13 +190,18 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate,
                 whileTap={!isDisabled ? { scale: 0.95 } : {}}
               >
                 <span>{day}</span>
-                <div className={`w-1.5 h-1.5 rounded-full ${
-                  challenge.difficulty === 'easy' ? 'bg-green-500' :
-                  challenge.difficulty === 'medium' ? 'bg-yellow-500' : 'bg-red-500'
-                }`} />
-                {isDone && isCurrentDay && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full flex items-center justify-center">
-                    <span className="text-[8px] text-white font-bold">✓</span>
+                {isDisabled ? (
+                  <span className="text-[8px] text-muted-foreground">N/A</span>
+                ) : (
+                  <div className={`w-1.5 h-1.5 rounded-full ${
+                    challenge.difficulty === 'easy' ? 'bg-green-500' :
+                    challenge.difficulty === 'medium' ? 'bg-yellow-500' : 'bg-red-500'
+                  }`} />
+                )}
+                {/* Checkmark for completed dailies (today or past) */}
+                {(isCompleted || (isDone && isCurrentDay)) && (
+                  <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-green-500 rounded-full flex items-center justify-center shadow-sm">
+                    <span className="text-[9px] text-white font-bold">&#10003;</span>
                   </div>
                 )}
               </motion.button>

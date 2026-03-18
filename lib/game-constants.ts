@@ -208,6 +208,7 @@ export interface Stats {
   lastDailyResult?: 'completed' | 'failed';
   dailyBestScore?: number;
   gameHistory: Array<{ date: string; score: number; accuracy: number; streak: number }>;
+  completedDailies?: string[]; // Array of date strings for completed dailies
 }
 
 // Launch date for daily challenges - everything before this is disabled
