@@ -258,8 +258,8 @@ export function PlayingView({
           </motion.div>
         </AnimatePresence>
         
-        {/* Color Blind Mode Info */}
-        {colorBlindMode && (
+        {/* Color Blind Mode Info - disabled in daily mode */}
+        {colorBlindMode && !isDailyMode && (
           <motion.div 
             className="mt-3 text-white/90 text-sm font-semibold drop-shadow-md bg-black/30 px-4 py-2 rounded-full"
             initial={{ opacity: 0 }}
@@ -269,8 +269,9 @@ export function PlayingView({
           </motion.div>
         )}
         
+        {/* Show color name after guess - disabled in daily mode */}
         <AnimatePresence>
-          {showColorName && !colorBlindMode && (
+          {showColorName && !colorBlindMode && !isDailyMode && (
             <motion.div 
               className="mt-2 text-white/90 text-sm sm:text-base font-semibold drop-shadow-md bg-black/20 px-3 py-1 rounded-full"
               initial={{ opacity: 0, y: 5 }}
