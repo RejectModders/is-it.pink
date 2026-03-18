@@ -307,7 +307,7 @@ export default function IsItPink() {
     }
   }, [hapticEnabled]);
 
-  const saveStats = useCallback(() => {
+  const saveStats = useCallback((dailyResult?: 'completed' | 'failed') => {
     // Skip saving stats in preview mode
     if (isPreviewMode) return;
     
@@ -325,9 +325,10 @@ export default function IsItPink() {
       totalCorrect: stats.totalCorrect + correctGuesses,
       totalGuesses: stats.totalGuesses + totalGuesses,
       longestStreak: Math.max(stats.longestStreak, maxStreak),
-      dailiesCompleted: stats.dailiesCompleted + (isDailyMode && !dailyCompleted ? 1 : 0),
+      dailiesCompleted: stats.dailiesCompleted + (isDailyMode && !dailyCompleted && dailyResult === 'completed' ? 1 : 0),
       unlockedAchievements: stats.unlockedAchievements,
       lastDailyDate: isDailyMode ? todayDate : stats.lastDailyDate,
+      lastDailyResult: isDailyMode ? dailyResult : stats.lastDailyResult,
       dailyBestScore: isDailyMode ? Math.max(stats.dailyBestScore || 0, score) : stats.dailyBestScore,
       gameHistory: [...(stats.gameHistory || []).slice(-29), newGameEntry],
     };
@@ -636,9 +637,9 @@ const createParticles = (isCorrect: boolean, color: string, clientX?: number, cl
       if (!timedMode || isDailyMode) {
         setLives(prev => {
           const newLives = prev - 1;
-          if (newLives <= 0 || (isDailyMode && dailyIndex >= dailySequence.length - 1)) {
+          if (newLives <= 0) {
             setGameState('gameover');
-            saveStats();
+            saveStats(isDailyMode ? 'failed' : undefined);
           }
           return newLives;
         });
@@ -655,7 +656,7 @@ const createParticles = (isCorrect: boolean, color: string, clientX?: number, cl
     if (isDailyMode && dailyIndex >= dailySequence.length - 1) {
       setTimeout(() => {
         setGameState('gameover');
-        saveStats();
+        saveStats('completed');
       }, 400);
       return;
     }
@@ -846,12 +847,13 @@ const accuracy = totalGuesses > 0 ? Math.round((correctGuesses / totalGuesses) *
             )}
 
             {gameState === 'calendar' && (
-              <CalendarView
-                setGameState={setGameState}
-                startPreview={startPreview}
-                playSound={playSound}
-                todayDate={todayDate}
-              />
+<CalendarView
+  setGameState={setGameState}
+  startPreview={startPreview}
+  playSound={playSound}
+  todayDate={todayDate}
+  stats={stats}
+  />
             )}
 
             {gameState === 'playing' && (

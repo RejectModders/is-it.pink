@@ -1,6 +1,6 @@
 'use client';
 
-import { Github, Trophy, Zap, Target, Heart, Info, Clock, Crown, ChevronRight, Calendar, Check, Award, BarChart3, Palette, Timer } from 'lucide-react';
+import { Github, Trophy, Zap, Target, Heart, Info, Clock, Crown, ChevronRight, Calendar, Check, X, Award, BarChart3, Palette, Timer } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import type { GameState, DailyChallenge } from '@/lib/game-constants';
@@ -12,6 +12,7 @@ interface MenuViewProps {
   timedMode: boolean;
   setTimedMode: (value: boolean) => void;
   hasDoneDaily: boolean;
+  dailyResult?: 'completed' | 'failed';
   startGame: (daily?: boolean) => void;
   setGameState: (state: GameState) => void;
   playSound: (type: 'correct' | 'wrong' | 'click') => void;
@@ -25,6 +26,7 @@ export function MenuView({
   timedMode,
   setTimedMode,
   hasDoneDaily,
+  dailyResult,
   startGame,
   setGameState,
   playSound,
@@ -89,8 +91,19 @@ export function MenuView({
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${hasDoneDaily ? 'bg-muted' : 'bg-primary'}`}>
-              {hasDoneDaily ? <Check className="w-6 h-6 text-muted-foreground" /> : <Calendar className="w-6 h-6 text-primary-foreground" />}
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+              hasDoneDaily 
+                ? dailyResult === 'completed' 
+                  ? 'bg-green-500/20' 
+                  : 'bg-red-500/20'
+                : 'bg-primary'
+            }`}>
+              {hasDoneDaily 
+                ? dailyResult === 'completed'
+                  ? <Check className="w-6 h-6 text-green-500" />
+                  : <X className="w-6 h-6 text-red-500" />
+                : <Calendar className="w-6 h-6 text-primary-foreground" />
+              }
             </div>
             <div>
               <div className="font-bold text-lg flex items-center gap-2">
@@ -100,9 +113,22 @@ export function MenuView({
                     {dailyChallenge.difficulty}
                   </span>
                 )}
+                {hasDoneDaily && (
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                    dailyResult === 'completed' 
+                      ? 'bg-green-500/20 text-green-500' 
+                      : 'bg-red-500/20 text-red-500'
+                  }`}>
+                    {dailyResult === 'completed' ? 'Completed' : 'Failed'}
+                  </span>
+                )}
               </div>
               <div className="text-sm text-muted-foreground">
-                {hasDoneDaily ? 'Completed! Come back tomorrow' : dailyChallenge ? (
+                {hasDoneDaily 
+                  ? dailyResult === 'completed'
+                    ? 'Great job! Come back tomorrow'
+                    : 'Better luck tomorrow!'
+                  : dailyChallenge ? (
                   <span className="flex flex-col gap-0.5">
                     <span className="font-medium text-foreground">{dailyChallenge.name}</span>
                     <span className="flex items-center gap-2 text-xs">
