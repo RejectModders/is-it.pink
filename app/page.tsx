@@ -21,7 +21,7 @@ import {
   type ColorTheme,
   type GameStats,
 } from '@/lib/game-constants';
-import { generateThemeColors, getDailySequence, getDailyChallenge, getChallengeSequence, getChallengeForDate } from '@/lib/game-utils';
+import { generateThemeColors, getDailySequence, getDailyChallenge, getChallengeSequence, getChallengeForDate, getLocalDateString } from '@/lib/game-utils';
 import { type DailyChallenge, DAILY_CHALLENGES } from '@/lib/game-constants';
 
 import {
@@ -156,7 +156,7 @@ export default function IsItPink() {
       setDarkMode(true);
     }
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
     setTodayDate(today);
     setDailySequence(getDailySequence(today));
     setDailyChallenge(getDailyChallenge(today));

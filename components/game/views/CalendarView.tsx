@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ArrowLeft, ChevronLeft, ChevronRight, Calendar, Play, Timer, Heart, Target } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { DAILY_CHALLENGES, DAILY_LAUNCH_DATE, type DailyChallenge, type GameState, type Stats } from '@/lib/game-constants';
-import { getChallengeForDate } from '@/lib/game-utils';
+import { getChallengeForDate, getLocalDateString } from '@/lib/game-utils';
 
 interface CalendarViewProps {
   setGameState: (state: GameState) => void;
@@ -63,7 +63,7 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate,
   
   const getDateString = (day: number) => {
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-    return date.toISOString().split('T')[0];
+    return getLocalDateString(date);
   };
   
   const isDailyDone = (day: number) => {
