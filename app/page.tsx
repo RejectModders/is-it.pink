@@ -21,7 +21,7 @@ import {
   type ColorTheme,
   type GameStats,
 } from '@/lib/game-constants';
-import { generateThemeColors, getDailySequence, getDailyChallenge, getChallengeSequence, getChallengeForDate, getLocalDateString } from '@/lib/game-utils';
+import { generateThemeColors, getDailySequence, getDailyChallenge, getChallengeSequence, getChallengeForDate, getLocalDateString, validateStats, calculateDailyStreak } from '@/lib/game-utils';
 import { type DailyChallenge, DAILY_CHALLENGES } from '@/lib/game-constants';
 
 import {
@@ -40,6 +40,7 @@ import {
   HelpView,
   CalendarView,
   TutorialOverlay,
+  ErrorBoundary,
 } from '@/components/game';
 
 export default function IsItPink() {
@@ -129,15 +130,23 @@ export default function IsItPink() {
     
     if (saved) setHighScore(parseInt(saved));
 if (savedStats) {
-  const parsed = JSON.parse(savedStats);
-  setStats({
-  ...parsed,
-  dailiesCompleted: parsed.dailiesCompleted || 0,
-  unlockedAchievements: parsed.unlockedAchievements || [],
-  gameHistory: parsed.gameHistory || [],
-  completedDailies: parsed.completedDailies || [],
-  });
+  try {
+    const parsed = JSON.parse(savedStats);
+    if (validateStats(parsed)) {
+      setStats({
+        ...parsed,
+        dailiesCompleted: parsed.dailiesCompleted || 0,
+        unlockedAchievements: parsed.unlockedAchievements || [],
+        gameHistory: parsed.gameHistory || [],
+        completedDailies: parsed.completedDailies || [],
+      });
+    } else {
+      console.warn('[v0] Invalid stats data, using defaults');
+    }
+  } catch (e) {
+    console.error('[v0] Failed to parse stats:', e);
   }
+}
     if (savedDarkMode) setDarkMode(JSON.parse(savedDarkMode));
     if (savedSound) setSoundEnabled(JSON.parse(savedSound));
     if (savedColorBlind) setColorBlindMode(JSON.parse(savedColorBlind));
@@ -172,6 +181,31 @@ if (savedStats) {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  // Persist sound settings
+  useEffect(() => {
+    localStorage.setItem('pinkGameSound', JSON.stringify(soundEnabled));
+  }, [soundEnabled]);
+
+  // Persist haptic settings
+  useEffect(() => {
+    localStorage.setItem('pinkGameHaptic', JSON.stringify(hapticEnabled));
+  }, [hapticEnabled]);
+
+  // Persist color blind mode
+  useEffect(() => {
+    localStorage.setItem('pinkGameColorBlind', JSON.stringify(colorBlindMode));
+  }, [colorBlindMode]);
+
+  // Persist sound pack
+  useEffect(() => {
+    localStorage.setItem('pinkGameSoundPack', soundPack);
+  }, [soundPack]);
+
+  // Persist color theme
+  useEffect(() => {
+    localStorage.setItem('pinkGameTheme', colorTheme);
+  }, [colorTheme]);
 
   // Timer for timed mode
   useEffect(() => {
@@ -754,8 +788,9 @@ const accuracy = totalGuesses > 0 ? Math.round((correctGuesses / totalGuesses) *
   };
   
   return (
-    <div className={`min-h-screen min-h-[100dvh] transition-colors duration-100 ${shakeScreen ? 'animate-shake' : ''}`}>
-      <div className="min-h-screen min-h-[100dvh] bg-background text-foreground flex flex-col relative overflow-hidden">
+    <ErrorBoundary>
+      <div className={`min-h-screen min-h-[100dvh] transition-colors duration-100 ${shakeScreen ? 'animate-shake' : ''}`}>
+        <div className="min-h-screen min-h-[100dvh] bg-background text-foreground flex flex-col relative overflow-hidden">
         {/* Background Pattern */}
         <div className="fixed inset-0 opacity-[0.02] dark:opacity-[0.03] pointer-events-none">
           <div className="absolute inset-0" style={{
@@ -906,8 +941,9 @@ const accuracy = totalGuesses > 0 ? Math.round((correctGuesses / totalGuesses) *
           </AnimatePresence>
         </main>
 
-        <GameFooter />
+          <GameFooter />
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }

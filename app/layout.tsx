@@ -88,6 +88,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" style={{ backgroundColor: '#1a0f16' }} suppressHydrationWarning>
       <head>
+        <link rel="preload" href="/favicon.png" as="image" type="image/png" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <style dangerouslySetInnerHTML={{ __html: `html, body { background-color: #1a0f16 !important; }` }} />
       </head>
