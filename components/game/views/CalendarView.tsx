@@ -17,6 +17,7 @@ interface CalendarViewProps {
 export function CalendarView({ setGameState, startPreview, playSound, todayDate, stats }: CalendarViewProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedChallenge, setSelectedChallenge] = useState<DailyChallenge | null>(null);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
   
   const today = new Date();
   const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
@@ -56,9 +57,11 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate,
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
     return date < DAILY_LAUNCH_DATE;
   };
-  
-  const isTodaysChallenge = (day: number) => {
-    return isToday(day);
+
+  const isPastDay = (day: number) => {
+    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    return date < todayMidnight;
   };
   
   const getDateString = (day: number) => {
@@ -139,38 +142,41 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate,
             const challenge = getChallengeForDate(date);
             const isCurrentDay = isToday(day);
             const isDisabled = isBeforeLaunch(day);
+            const isPast = !isCurrentDay && isPastDay(day);
             const isDone = isDailyDone(day);
-            const isClickable = !isDisabled && (isCurrentDay || !isDone);
+            const isSelected = selectedChallenge?.id === challenge.id && 
+              getDateString(day) === (selectedDay ?? '');
             
             return (
               <motion.button
                 key={day}
                 onClick={() => {
-                  if (isClickable) {
+                  if (!isDisabled) {
                     playSound('click');
                     setSelectedChallenge(challenge);
+                    setSelectedDay(getDateString(day));
                   }
                 }}
                 disabled={isDisabled}
                 className={`aspect-square rounded-lg text-sm font-medium transition-all flex flex-col items-center justify-center gap-0.5 relative ${
-                  isDisabled 
-                    ? 'opacity-30 cursor-not-allowed' 
-                    : isDone && !isCurrentDay
-                      ? 'opacity-60 bg-muted/50'
-                      : selectedChallenge?.id === challenge.id
+                  isDisabled
+                    ? 'opacity-25 cursor-not-allowed'
+                    : isPast
+                      ? 'opacity-50 hover:opacity-70 hover:bg-muted'
+                      : isSelected
                         ? 'bg-primary text-primary-foreground'
                         : isCurrentDay
                           ? 'bg-primary/20 border-2 border-primary'
                           : 'hover:bg-muted'
                 }`}
-                whileHover={isClickable ? { scale: 1.05 } : {}}
-                whileTap={isClickable ? { scale: 0.95 } : {}}
+                whileHover={!isDisabled ? { scale: 1.05 } : {}}
+                whileTap={!isDisabled ? { scale: 0.95 } : {}}
               >
                 <span>{day}</span>
                 <div className={`w-1.5 h-1.5 rounded-full ${
                   challenge.difficulty === 'easy' ? 'bg-green-500' :
                   challenge.difficulty === 'medium' ? 'bg-yellow-500' : 'bg-red-500'
-                } ${isDisabled ? 'opacity-30' : ''}`} />
+                }`} />
                 {isDone && isCurrentDay && (
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full flex items-center justify-center">
                     <span className="text-[8px] text-white font-bold">✓</span>
@@ -190,7 +196,18 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate,
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex items-center justify-between">
-            <h3 className="font-bold text-lg">{selectedChallenge.name}</h3>
+            <div>
+              <h3 className="font-bold text-lg">{selectedChallenge.name}</h3>
+              {selectedDay && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {selectedDay === getLocalDateString()
+                    ? 'Today'
+                    : selectedDay < getLocalDateString()
+                      ? 'Past challenge'
+                      : new Date(selectedDay + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </p>
+              )}
+            </div>
             <span className={`text-xs font-semibold px-2 py-1 rounded-full border capitalize ${getDifficultyColor(selectedChallenge.difficulty)}`}>
               {selectedChallenge.difficulty}
             </span>
@@ -216,23 +233,33 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate,
           </div>
           
           {(() => {
-            // Check if this selected challenge is today's and already done
-            const todayChallenge = getChallengeForDate(new Date());
-            const isThisToday = selectedChallenge.id === todayChallenge.id && 
-              stats.lastDailyDate === new Date().toISOString().split('T')[0];
-            
-            if (isThisToday) {
+            const todayStr = getLocalDateString();
+            const isThisToday = selectedDay === todayStr;
+            const isThisPast = selectedDay !== null && selectedDay < todayStr;
+
+            // Today and already done
+            if (isThisToday && stats.lastDailyDate === todayStr) {
               return (
                 <div className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 ${
-                  stats.lastDailyResult === 'completed' 
-                    ? 'bg-green-500/20 text-green-500 border border-green-500/30' 
+                  stats.lastDailyResult === 'completed'
+                    ? 'bg-green-500/20 text-green-500 border border-green-500/30'
                     : 'bg-red-500/20 text-red-500 border border-red-500/30'
                 }`}>
                   {stats.lastDailyResult === 'completed' ? 'Completed!' : 'Failed'} - Come back tomorrow
                 </div>
               );
             }
-            
+
+            // Past day - viewable but not practicable
+            if (isThisPast) {
+              return (
+                <div className="w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 bg-muted/50 text-muted-foreground border border-border">
+                  This challenge has passed
+                </div>
+              );
+            }
+
+            // Today (not done yet) or future
             return (
               <>
                 <motion.button
@@ -245,11 +272,10 @@ export function CalendarView({ setGameState, startPreview, playSound, todayDate,
                   whileTap={{ scale: 0.98 }}
                 >
                   <Play className="w-4 h-4" />
-                  Practice This Challenge
+                  {isThisToday ? 'Play Today\'s Challenge' : 'Practice This Challenge'}
                 </motion.button>
-                
                 <p className="text-xs text-muted-foreground">
-                  Practice mode - stats won&apos;t be saved
+                  {isThisToday ? 'This is today\'s real daily challenge' : 'Practice mode - stats won\'t be saved'}
                 </p>
               </>
             );
