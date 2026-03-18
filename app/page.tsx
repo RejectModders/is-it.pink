@@ -804,6 +804,7 @@ const accuracy = totalGuesses > 0 ? Math.round((correctGuesses / totalGuesses) *
                 timedMode={timedMode}
                 setTimedMode={setTimedMode}
                 hasDoneDaily={hasDoneDaily}
+                dailyResult={stats.lastDailyResult}
                 startGame={startGame}
                 setGameState={setGameState}
                 playSound={playSound}

@@ -61,6 +61,7 @@ export function MenuView({
               alt="is it pink?" 
               width={80} 
               height={80}
+              loading="eager"
               className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-2xl"
             />
           </motion.div>
